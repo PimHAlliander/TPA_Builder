@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TPA Route Builder &#8212; Alliander TPA</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#c8dba0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:16px 24px;font-family:Arial,Helvetica,sans-serif;font-size:15px}
+#app{background:#f4f8ee;border-radius:18px;overflow:hidden;border:3px solid #c5d9a0;width:100%;max-width:960px;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.15)}
+#hdr{background:#2d5a12;padding:20px 32px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.badge{background:#fff;color:#2d5a12;font-weight:700;font-size:16px;border-radius:8px;padding:6px 16px}
+.htitle{color:#fff;font-weight:700;font-size:24px;line-height:1.2}
+.hsub{color:rgba(255,255,255,.8);font-size:16px}
+#lb-hdr-btn{background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);color:#fff;border-radius:24px;padding:10px 22px;font-size:16px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:Arial,Helvetica,sans-serif}
+#lb-hdr-btn:hover{background:rgba(255,255,255,.35)}
+/* ATTRACT */
+#screen-attract{display:none;text-align:center;background:#2d5a12;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:40px 24px 28px;min-height:500px}
+.attr-circle1{position:absolute;width:300px;height:300px;border-radius:50%;background:#4a8520;opacity:.25;top:-80px;right:-80px;pointer-events:none}
+.attr-circle2{position:absolute;width:180px;height:180px;border-radius:50%;background:#7ab340;opacity:.18;bottom:-40px;left:-40px;pointer-events:none}
+.attr-robot{font-size:110px;line-height:1;margin-bottom:16px;position:relative;z-index:1;animation:robotbounce 1.8s ease-in-out infinite}
+@keyframes robotbounce{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-16px) rotate(3deg)}}
+.attr-title{color:#fff;font-size:48px;font-weight:900;margin-bottom:10px;position:relative;z-index:1;line-height:1.1}
+.attr-title span{color:#d4eaaf}
+.attr-sub{color:rgba(255,255,255,.9);font-size:20px;margin-bottom:28px;position:relative;z-index:1;line-height:1.6}
+.attr-cta{background:#e07718;color:#fff;border:none;border-radius:40px;padding:20px 56px;font-size:26px;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif;position:relative;z-index:1;animation:ctapulse 2.2s ease-in-out infinite}
+@keyframes ctapulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(224,119,24,.5)}50%{transform:scale(1.05);box-shadow:0 0 0 14px rgba(224,119,24,0)}}
+.attr-lb{background:rgba(255,255,255,.12);border-radius:12px;margin:22px 0 0;padding:16px 24px;position:relative;z-index:1;width:100%;max-width:560px}
+.attr-lb-title{color:#d4eaaf;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;text-align:left}
+.attr-lb-row{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.attr-lb-rank{font-size:20px;min-width:28px;text-align:center}
+.attr-lb-name{flex:1;font-size:18px;font-weight:700;color:#fff;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.attr-lb-score{font-size:18px;font-weight:700;color:#d4eaaf;white-space:nowrap}
+/* MODUS */
+#screen-modus{display:none;padding:36px 28px 28px;text-align:center}
+/* INTRO */
+#screen-intro{display:none;padding:32px 28px 28px}
+.intro-header{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:18px;border-bottom:2px solid #d4eaaf}
+.intro-robot{font-size:52px;line-height:1;flex-shrink:0}
+.intro-title{font-size:32px;font-weight:900;color:#2d5a12;margin-bottom:6px}
+.intro-sub{font-size:18px;color:#445;line-height:1.5}
+.intro-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.intro-step{display:flex;align-items:flex-start;gap:14px;background:#fff;border:1.5px solid #c5d9a0;border-radius:12px;padding:14px 18px}
+.intro-step-num{width:44px;height:44px;border-radius:50%;background:#2d5a12;color:#fff;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.intro-step-text h4{font-size:18px;font-weight:700;color:#2d5a12;margin-bottom:4px}
+.intro-step-text p{font-size:16px;color:#445;line-height:1.6}
+.intro-btn{width:100%;background:#2d5a12;color:#fff;border:none;border-radius:12px;padding:20px;font-size:22px;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif}
+.intro-btn:hover{background:#4a8520}
+/* MENU */
+#screen-menu{display:none;padding:28px 28px 24px;text-align:center}
+.menu-robot{font-size:80px;margin-bottom:16px;line-height:1}
+.menu-sub{font-size:18px;color:#445;margin-bottom:24px;line-height:1.6}
+.lvl-cards{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.lvl-card{background:#fff;border:2px solid;border-radius:14px;padding:22px 28px;display:flex;align-items:center;gap:22px;cursor:pointer;text-align:left;transition:transform .15s;font-family:Arial,Helvetica,sans-serif}
+.lvl-card:hover{transform:translateY(-3px)}
+.lvl-num{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;flex-shrink:0}
+.lvl-name{font-size:22px;font-weight:700;color:#1a2012;margin-bottom:6px}
+.lvl-meta{font-size:16px;color:#778;line-height:1.4}
+.lvl-pts{font-size:32px;font-weight:900;flex-shrink:0;min-width:80px;text-align:right}
+.menu-lb-btn{width:100%;background:#fff;border:2px solid #c5d9a0;border-radius:12px;padding:18px;font-size:20px;font-weight:700;cursor:pointer;color:#667;display:flex;align-items:center;justify-content:center;gap:10px;font-family:Arial,Helvetica,sans-serif}
+.menu-lb-btn:hover{border-color:#4a8520;color:#2d5a12}
+/* START */
+#screen-start{display:none;padding:40px 32px;text-align:center}
+/* GAME */
+#screen-game{display:none;padding:10px 16px 8px}
+.topbar{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.back-btn{background:#fff;border:2px solid #c5d9a0;border-radius:8px;padding:6px 13px;font-size:13px;font-weight:700;cursor:pointer;color:#667;white-space:nowrap;font-family:Arial,Helvetica,sans-serif}
+.back-btn:hover{border-color:#4a8520;color:#2d5a12}
+.lvl-badge-sm{font-size:13px;font-weight:700;border-radius:20px;padding:5px 14px;color:#fff}
+.pts-remain{margin-left:auto;font-size:13px;font-weight:700;color:#667}
+.scenario{border:1.5px solid;border-radius:10px;padding:10px 16px;margin-bottom:8px;display:flex;gap:14px;align-items:flex-start}
+.sc-title{font-size:16px;font-weight:700}
+.sc-desc{font-size:13px;color:#445;margin-top:4px;line-height:1.5}
+.pts-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px;background:#fff;border:1.5px solid #c5d9a0;border-radius:8px;padding:6px 14px}
+.pts-bar-lbl{font-size:13px;color:#445;flex-shrink:0;font-weight:700}
+.pts-track{flex:1;height:16px;background:#e0ecd0;border-radius:8px;overflow:hidden}
+.pts-fill{height:100%;border-radius:8px;transition:width .5s,background .4s}
+.pts-num{font-size:20px;font-weight:700;min-width:44px;text-align:right;transition:color .3s}
+.pts-den{font-size:15px;color:#888}
+#timer-bar-wrap{display:none;align-items:center;gap:10px;margin-bottom:12px;background:#fff;border:1.5px solid #c5d9a0;border-radius:8px;padding:6px 14px}
+.canvas-wrap{position:relative;margin-bottom:10px}
+.game-canvas{width:100%;display:block;border-radius:10px;background:#fff;touch-action:none;border:1.5px solid #c5d9a0}
+.flash-overlay{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:10px;pointer-events:none;opacity:0;background:#c0281a}
+.kist-lbl{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.kist-hint{font-size:12px;color:#667;font-weight:400;text-transform:none;letter-spacing:0;margin-left:6px}
+#pieces{display:flex;flex-wrap:wrap;gap:6px;min-height:36px;background:#fff;border:2px dashed #c5d9a0;border-radius:8px;padding:7px;margin-bottom:7px;transition:background .15s,border-color .15s}
+#pieces.over{background:#eaf3de;border-color:#4a8520}
+.piece{background:#fff;border:2px dashed #c5d9a0;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:700;color:#1a2012;cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px;transition:border-color .12s,background .12s,transform .12s;white-space:nowrap}
+.piece:hover{border-color:#4a8520;background:#eaf3de;transform:translateY(-2px)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.piece.wrong-anim{border-color:#c0281a;background:#fde0dd;animation:shake .35s}
+.action-row{display:flex;gap:6px;margin-bottom:7px;flex-wrap:wrap}
+.check-btn{flex:2;min-width:140px;color:#fff;border:none;border-radius:10px;padding:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif;transition:opacity .15s}
+.check-btn:hover{opacity:.85}
+.check-btn:disabled{background:#bbb!important;cursor:default;opacity:1}
+.hint-btn{flex:1;min-width:100px;background:#fff;border:2px solid #e07718;border-radius:10px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;color:#e07718;display:flex;align-items:center;justify-content:center;gap:6px;font-family:Arial,Helvetica,sans-serif}
+.hint-btn:hover{background:#fde9c8}
+.hint-btn:disabled{opacity:.35;cursor:default}
+.pips{display:flex;gap:4px;margin-left:4px}
+.pip{width:12px;height:12px;border-radius:50%;background:#e07718;display:inline-block}
+.pip.used{background:#ccc}
+.reset-btn{background:#fff;border:2px solid #c5d9a0;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;color:#667;white-space:nowrap;font-family:Arial,Helvetica,sans-serif}
+.reset-btn:hover{border-color:#4a8520;color:#2d5a12}
+.feedback{font-size:17px;font-weight:700;border-radius:10px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .3s,padding .3s,opacity .2s;display:flex;align-items:center;gap:8px}
+.feedback.show{max-height:70px;padding:8px 14px;margin-bottom:7px;opacity:1}
+.feedback.ok{background:#eaf3de;color:#2d5a12;border-left:4px solid #4a8520}
+.feedback.err{background:#fde0dd;color:#c0281a;border-left:4px solid #c0281a}
+.feedback.warn{background:#fde9c8;color:#7a3c00;border-left:4px solid #e07718}
+.feedback.hint{background:#e8f0ff;color:#1a3a7a;border-left:4px solid #4a70cc}
+#cam-bpmn-tip{font-size:12px;color:#667;background:#f0f0ff;border-left:3px solid #6e4aff;border-radius:0 8px 8px 0;padding:5px 12px;margin-bottom:6px;line-height:1.4;min-height:28px;transition:color .2s;display:none}
+/* GAMEOVER */
+#screen-gameover{display:none;padding:48px 32px;text-align:center}
+/* RESULT */
+#screen-result{display:none;padding:28px 24px 24px;text-align:center}
+.res-icon{font-size:86px;margin-bottom:16px;line-height:1}
+.res-title{font-size:34px;font-weight:900;color:#2d5a12;margin-bottom:10px}
+.res-msg{font-size:18px;color:#445;margin-bottom:22px;line-height:1.7;max-width:640px;margin-left:auto;margin-right:auto}
+.res-score-box{border-radius:14px;padding:18px;margin-bottom:18px;border:2px solid #c5d9a0;background:#f4f8ee}
+.res-score-num{font-size:62px;font-weight:700}
+.res-score-lbl{font-size:16px;color:#667;margin-top:6px}
+.name-box{background:#fff;border:1.5px solid #c5d9a0;border-radius:12px;padding:16px 20px;margin-bottom:16px;text-align:left}
+.name-label{font-size:18px;font-weight:700;color:#2d5a12;display:block;margin-bottom:10px}
+.name-input{width:100%;border:2px solid #c5d9a0;border-radius:10px;padding:16px 20px;font-size:20px;color:#1a2012;outline:none;font-family:Arial,Helvetica,sans-serif;transition:border-color .15s}
+.name-input:focus{border-color:#4a8520}
+.name-input.err{border-color:#c0281a}
+.name-input:disabled{background:#f4f8ee;color:#aaa;cursor:default}
+.saved-msg{background:#eaf3de;color:#2d5a12;border-radius:10px;padding:14px 18px;font-size:16px;font-weight:700;margin-bottom:16px;display:none;align-items:center;gap:8px}
+.res-btns{display:flex;gap:10px;max-width:600px;margin:0 auto}
+.res-btn{flex:1;border:none;border-radius:12px;padding:18px;font-size:20px;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif}
+.res-btn.primary{color:#fff}
+.res-btn.primary:hover{opacity:.85}
+.res-btn.secondary{background:#fff;border:2px solid #c5d9a0;color:#1a2012}
+.res-btn.secondary:hover{border-color:#4a8520}
+.res-btn:disabled{background:#bbb!important;cursor:default;opacity:.6}
+/* LEADERBOARD */
+#screen-lb{display:none;position:absolute;top:0;left:0;width:100%;min-height:100%;background:#f4f8ee;z-index:100;padding:24px;border-radius:18px}
+.lb-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.lb-hdr h2{font-size:30px;font-weight:900;color:#2d5a12}
+.lb-close-btn{background:#fff;border:2px solid #c5d9a0;border-radius:10px;padding:8px 18px;font-size:16px;font-weight:700;cursor:pointer;color:#667;font-family:Arial,Helvetica,sans-serif}
+.lb-close-btn:hover{border-color:#4a8520;color:#2d5a12}
+.lb-json-bar{background:#f0f5ff;border:1.5px solid #b5c8f0;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.lb-json-bar span{font-size:14px;color:#445;flex:1}
+.lb-json-btn{background:#1a3a72;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif;white-space:nowrap}
+.lb-json-btn:hover{background:#2563a8}
+.lb-json-btn.sec{background:#fff;border:2px solid #b5c8f0;color:#1a3a72}
+.lb-json-status{font-size:13px;font-weight:700;padding:6px 12px;border-radius:6px;display:none}
+.lb-json-status.ok{background:#eaf3de;color:#2d5a12;display:inline-block}
+.lb-json-status.err{background:#fde0dd;color:#c0281a;display:inline-block}
+.lb-sub{font-size:17px;color:#667;margin-bottom:20px}
+.lb-list{max-height:440px;overflow-y:auto}
+.lb-empty{text-align:center;color:#889;font-size:18px;padding:48px 0;display:none}
+.lb-row{display:flex;align-items:center;gap:14px;background:#fff;border:1.5px solid #c5d9a0;border-radius:12px;padding:16px 22px;margin-bottom:10px}
+.lb-row.gold{border-color:#d4a800;background:#fffcee}
+.lb-row.silver{border-color:#9aacb4;background:#f8f9fa}
+.lb-row.bronze{border-color:#b87848;background:#fef5ee}
+.lb-rank{font-size:30px;min-width:40px;text-align:center}
+.lb-name{flex:1;font-size:20px;font-weight:700;color:#1a2012}
+.lb-lvl-badge{font-size:15px;font-weight:700;border-radius:10px;padding:4px 12px;color:#fff;margin-left:8px}
+.lb-score{font-size:22px;font-weight:700;min-width:90px;text-align:right}
+.lb-date{font-size:15px;color:#999;min-width:80px;text-align:right}
+.lb-footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1.5px solid #c5d9a0}
+.lb-clear-btn{background:none;border:none;color:#c0281a;font-size:17px;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif}
+.lb-clear-btn:hover{text-decoration:underline}
+.lb-back-btn{background:#2d5a12;color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:18px;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif}
+.lb-back-btn:hover{background:#4a8520}
+#confetti-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:200;display:none}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hdr">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="badge">alliander</div>
+      <div><div class="htitle">TPA Route Builder</div><div class="hsub">Team Process Automation</div></div>
+    </div>
+    <button id="lb-hdr-btn">&#127942; Leaderboard</button>
+  </div>
+
+  <div id="screen-attract">
+    <div class="attr-circle1"></div><div class="attr-circle2"></div>
+    <div class="attr-robot">&#128260;</div>
+    <div class="attr-title">TPA Route <span>Builder</span></div>
+    <div class="attr-sub">Automatiseer en orkestreer met Team TPA!<br>Team Process Automation &mdash; Alliander</div>
+    <button id="attr-cta-btn" class="attr-cta">&#9654; Kies een level en speel!</button>
+    <div class="attr-lb" id="attr-lb-wrap">
+      <div class="attr-lb-title">&#127942; Laatste scores</div>
+      <div id="attr-lb-list"></div>
+    </div>
+  </div>
+
+  <div id="screen-modus">
+    <div style="font-size:64px;margin-bottom:14px;line-height:1">&#128260;</div>
+    <div style="font-size:32px;font-weight:900;color:#2d5a12;margin-bottom:8px">Kies je modus</div>
+    <div style="font-size:17px;color:#445;margin-bottom:28px;line-height:1.6">Speel als RPA-developer die robots bouwt,<br>of als Camunda-architect die processen ontwerpt!</div>
+    <div style="display:flex;gap:16px;margin-bottom:16px">
+      <div id="modus-rpa" style="flex:1;background:#f4f8ee;border:3px solid #c5d9a0;border-radius:16px;padding:24px 18px;cursor:pointer;text-align:center;transition:all .15s" onmouseover="this.style.borderColor='#4a8520'" onmouseout="this.style.borderColor='#c5d9a0'">
+        <div style="font-size:52px;margin-bottom:12px">&#129302;</div>
+        <div style="font-size:22px;font-weight:900;color:#2d5a12;margin-bottom:6px">RPA</div>
+        <div style="font-size:14px;color:#667;line-height:1.5">Bouw routes voor software robots die taken automatiseren via BluePrism.</div>
+        <div style="margin-top:14px;background:#4a8520;color:#fff;border-radius:10px;padding:10px;font-size:15px;font-weight:700">3 levels &middot; Max 750 pts</div>
+      </div>
+      <div id="modus-cam" style="flex:1;background:#f0f0ff;border:3px solid #c0b8f0;border-radius:16px;padding:24px 18px;cursor:pointer;text-align:center;transition:all .15s" onmouseover="this.style.borderColor='#6e4aff'" onmouseout="this.style.borderColor='#c0b8f0'">
+        <div style="font-size:52px;margin-bottom:12px">&#9881;&#65039;</div>
+        <div style="font-size:22px;font-weight:900;color:#4a2aaa;margin-bottom:6px">Camunda</div>
+        <div style="font-size:14px;color:#667;line-height:1.5">Ontwerp BPMN procesdiagrammen met de juiste elementen.</div>
+        <div style="margin-top:14px;background:#4a2aaa;color:#fff;border-radius:10px;padding:10px;font-size:15px;font-weight:700">3 levels &middot; Max 750 pts</div>
+      </div>
+    </div>
+    <button id="modus-back-btn" style="background:#fff;border:2px solid #c5d9a0;border-radius:12px;padding:12px 24px;font-size:16px;font-weight:700;cursor:pointer;color:#667;font-family:Arial,Helvetica,sans-serif">&#8592; Terug</button>
+  </div>
+
+  <div id="screen-intro">
+    <div class="intro-header">
+      <div class="intro-robot">&#128260;</div>
+      <div>
+        <div class="intro-title">Hoe werkt het spel?</div>
+        <div class="intro-sub">Help de TPA Route Builder de juiste processtappen in de juiste volgorde te plaatsen!</div>
+      </div>
+    </div>
+    <div class="intro-steps">
+      <div class="intro-step"><div class="intro-step-num">1</div><div class="intro-step-text"><h4>Kies een level</h4><p>Elk level heeft een eigen thema. Level 1 is het makkelijkst, level 3 het moeilijkst.</p></div></div>
+      <div class="intro-step"><div class="intro-step-num">2</div><div class="intro-step-text"><h4>Bouw de route</h4><p>Klik de puzzelstukjes in de juiste volgorde. Klik een geplaatst stukje op het canvas om het terug te zetten.</p></div></div>
+      <div class="intro-step"><div class="intro-step-num">3</div><div class="intro-step-text"><h4>Controleer je route</h4><p>Druk op &#8222;Controleer route&#8220; als alle vakjes gevuld zijn. Fouten kosten punten. Gebruik hints als je vastzit!</p></div></div>
+      <div class="intro-step"><div class="intro-step-num">4</div><div class="intro-step-text"><h4>Zet je naam op het leaderboard</h4><p>Vul je naam in en bekijk je score. Hoe sneller en foutlozer, hoe meer bonuspunten!</p></div></div>
+    </div>
+    <button class="intro-btn" id="intro-to-menu-btn">Kies een level &#8594;</button>
+  </div>
+
+  <div id="screen-menu">
+    <div class="menu-robot">&#128260;</div>
+    <div style="font-size:34px;font-weight:900;margin-bottom:8px" id="menu-title">Kies een level</div>
+    <div class="menu-sub" id="menu-sub">Speel &eacute;&eacute;n level en zet je naam op het leaderboard!</div>
+    <div class="lvl-cards" id="lvl-cards"></div>
+    <button class="menu-lb-btn" id="menu-lb-btn">&#127942; Bekijk het leaderboard</button>
+  </div>
+
+  <div id="screen-start">
+    <div id="start-icon" style="font-size:80px;margin-bottom:16px;line-height:1"></div>
+    <div id="start-name" style="font-size:32px;font-weight:900;margin-bottom:8px"></div>
+    <div id="start-desc" style="font-size:17px;color:#445;margin-bottom:10px;line-height:1.6;max-width:520px;margin-left:auto;margin-right:auto"></div>
+    <div id="start-meta" style="font-size:16px;color:#889;margin-bottom:28px"></div>
+    <div id="start-pts-box" style="border-radius:14px;padding:20px 24px;margin-bottom:28px;text-align:left;max-width:520px;margin-left:auto;margin-right:auto;background:#f4f8ee;border:1.5px solid #c5d9a0">
+      <div id="start-pts-title" style="font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;color:#2d5a12">Puntensysteem</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;font-size:15px"><span style="color:#445">Basispunten (foutloos)</span><span id="start-maxpts" style="font-weight:700"></span></div>
+        <div style="display:flex;justify-content:space-between;font-size:15px"><span style="color:#445">&#9889; Tijdsbonus (max)</span><span id="start-timebonus" style="font-weight:700;color:#e07718"></span></div>
+        <div style="display:flex;justify-content:space-between;font-size:15px"><span style="color:#445">&#11088; Perfect bonus</span><span style="font-weight:700;color:#4a8520">+50</span></div>
+        <div id="start-total-row" style="border-top:1.5px solid #c5d9a0;padding-top:8px;margin-top:2px;display:flex;justify-content:space-between;font-size:16px"><span style="font-weight:700">Maximaal haalbaar</span><span id="start-total" style="font-weight:900"></span></div>
+      </div>
+    </div>
+    <button id="start-play-btn" style="width:100%;max-width:420px;background:#2d5a12;color:#fff;border:none;border-radius:14px;padding:22px;font-size:24px;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif">&#9654; Start het spel!</button>
+    <button id="start-back-btn" style="margin-top:12px;width:100%;max-width:420px;background:#fff;border:2px solid #c5d9a0;border-radius:12px;padding:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif;color:#667">&#8592; Terug naar levelkeuze</button>
+  </div>
+
+  <div id="screen-game">
+    <div class="topbar">
+      <button class="back-btn" id="game-back-btn">&#8592; Menu</button>
+      <div id="lvl-badge" class="lvl-badge-sm">Level 1</div>
+      <div id="pts-remain" class="pts-remain">Max: 100 pts</div>
+    </div>
+    <div class="scenario" id="scenario-box">
+      <div id="sc-icon" style="font-size:38px;flex-shrink:0;line-height:1.2">&#128260;</div>
+      <div><div class="sc-title" id="sc-title"></div><div class="sc-desc" id="sc-desc"></div></div>
+    </div>
+    <div class="pts-bar">
+      <div class="pts-bar-lbl">Score:</div>
+      <div class="pts-track"><div class="pts-fill" id="pts-fill" style="width:100%;background:#4a8520"></div></div>
+      <div class="pts-num" id="pts-num" style="color:#4a8520">100</div>
+      <div class="pts-den" id="pts-den">/100</div>
+    </div>
+    <div id="timer-bar-wrap">
+      <div style="font-size:17px;color:#e07718;flex-shrink:0;font-weight:700">&#9889; Tijdsbonus</div>
+      <div style="flex:1;height:16px;background:#fde9c8;border-radius:8px;overflow:hidden"><div id="timer-fill" style="height:100%;border-radius:8px;background:linear-gradient(90deg,#e07718,#ffe066);width:100%"></div></div>
+      <div id="timer-bonus-lbl" style="font-size:18px;font-weight:700;color:#e07718;min-width:62px;text-align:right">+?</div>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="canvas" class="game-canvas" height="280"></canvas>
+      <div id="flash-overlay" class="flash-overlay"></div>
+    </div>
+    <div id="bpmn-tip-bar">Hover over een element voor BPMN-uitleg</div>
+    <div>
+      <div class="kist-lbl" id="kist-lbl">&#129513; Gereedschapskist<span class="kist-hint">klik om te plaatsen &middot; klik op een geplaatst stukje om het terug te zetten</span></div>
+      <div id="pieces"></div>
+    </div>
+    <div style="margin-bottom:10px"></div>
+    <div class="action-row">
+      <button class="check-btn" id="check-btn" disabled>&#10003; Controleer route</button>
+      <button class="hint-btn" id="hint-btn">&#128161; Hint <span class="pips" id="pips"></span></button>
+      <button class="reset-btn" id="reset-btn">&#8634; Opnieuw</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <div id="screen-gameover">
+    <div style="font-size:90px;line-height:1;margin-bottom:20px">&#128531;</div>
+    <div style="font-size:34px;font-weight:900;color:#c0281a;margin-bottom:12px">Score op nul!</div>
+    <div id="gameover-msg" style="font-size:18px;color:#445;line-height:1.7;margin-bottom:32px;max-width:560px;margin-left:auto;margin-right:auto"></div>
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:480px;margin:0 auto">
+      <button id="gameover-lower-btn" style="background:#e07718;color:#fff;border:none;border-radius:12px;padding:20px;font-size:20px;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif"></button>
+      <button id="gameover-menu-btn" style="background:#fff;border:2px solid #c5d9a0;border-radius:12px;padding:18px;font-size:18px;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif;color:#667">&#8592; Terug naar menu</button>
+    </div>
+  </div>
+
+  <div id="screen-result">
+    <div class="res-icon" id="res-icon"></div>
+    <div class="res-title" id="res-title"></div>
+    <div class="res-msg" id="res-msg"></div>
+    <div class="res-score-box" id="res-score-box">
+      <div class="res-score-num" id="res-score-num"></div>
+      <div class="res-score-lbl" id="res-score-lbl"></div>
+      <div id="res-score-split" style="margin-top:12px;display:none;gap:10px;justify-content:center"></div>
+    </div>
+    <div class="name-box">
+      <label class="name-label" for="name-inp">&#9999; Vul je naam of teamnaam in voor het leaderboard:</label>
+      <input class="name-input" id="name-inp" type="text" placeholder="Bijv. Pim / Team TPA / Alliander" maxlength="40" autocomplete="off">
+    </div>
+    <div class="saved-msg" id="saved-msg">&#10003; Je score is opgeslagen! Per potje kun je slechts &eacute;&eacute;n keer opslaan.</div>
+    <div class="res-btns">
+      <button class="res-btn primary" id="save-btn">&#127942; Opslaan en bekijk leaderboard</button>
+      <button class="res-btn secondary" id="result-menu-btn">&#8592; Terug naar menu</button>
+    </div>
+  </div>
+
+  <div id="screen-lb">
+    <div class="lb-hdr"><h2>&#127942; Leaderboard</h2><button class="lb-close-btn" id="lb-close-btn">&#10005; Sluiten</button></div>
+    <div class="lb-json-bar" id="lb-github-bar">
+      <span id="lb-github-status-txt">&#128260; Scores worden automatisch opgeslagen naar GitHub</span>
+      <span class="lb-json-status" id="lb-json-status"></span>
+    </div>
+    <div class="lb-sub">Topscores &mdash; opgeslagen lokaal of via JSON bestand</div>
+    <div class="lb-list" id="lb-list"></div>
+    <div class="lb-empty" id="lb-empty">Nog geen scores. Speel een level en schrijf je in!</div>
+    <div class="lb-footer">
+      <button class="lb-clear-btn" id="lb-clear-btn">&#128465; Wis leaderboard</button>
+      <button class="lb-back-btn" id="lb-back-btn">&#8592; Terug</button>
+    </div>
+  </div>
+
+  <canvas id="confetti-canvas"></canvas>
+</div>
+<script>
+'use strict';
+
+'use strict';
+
+/* ══════════════════════════════════════════════════════
+   POLYFILL
+══════════════════════════════════════════════════════ */
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r) {
+    r = Math.min(r, w/2, h/2);
+    this.beginPath();
+    this.moveTo(x+r,y); this.lineTo(x+w-r,y); this.quadraticCurveTo(x+w,y,x+w,y+r);
+    this.lineTo(x+w,y+h-r); this.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    this.lineTo(x+r,y+h); this.quadraticCurveTo(x,y+h,x,y+h-r);
+    this.lineTo(x,y+r); this.quadraticCurveTo(x,y,x+r,y);
+    this.closePath(); return this;
+  };
+}
+
+/* ══════════════════════════════════════════════════════
+   CONFIGURATIE — vul hier je GitHub gegevens in
+══════════════════════════════════════════════════════ */
+const GITHUB_CONFIG = {
+  owner: 'jouw-github-gebruikersnaam',   // bijv. 'PimHoreman'
+  repo:  'jouw-repo-naam',               // bijv. 'tpa-route-builder'
+  file:  'leaderboard.json',             // pad naar het JSON bestand
+  token: 'github_pat_xxxx'              // GitHub Personal Access Token (repo scope)
+};
+
+/* ══════════════════════════════════════════════════════
+   CLASS: Storage — leaderboard via GitHub JSON bestand
+══════════════════════════════════════════════════════ */
+class Storage {
+  constructor(lsKey) {
+    this._key = lsKey;
+    this._mem = {};
+    this._useLS = false;
+    this._fileSha = null;      // GitHub file SHA (nodig voor updates)
+    this._loaded = false;
+    this._loadPromise = null;
+    try { localStorage.setItem('_t','1'); localStorage.removeItem('_t'); this._useLS=true; } catch(e) {}
+  }
+
+  /* ── Laad scores van GitHub bij opstarten ── */
+  async loadFromGitHub() {
+    if (this._loadPromise) return this._loadPromise;
+    this._loadPromise = this._fetchGitHub();
+    return this._loadPromise;
+  }
+
+  async _fetchGitHub() {
+    const cfg = GITHUB_CONFIG;
+    if (!cfg.owner || cfg.owner.includes('jouw-')) {
+      console.warn('GitHub config niet ingesteld — lokale opslag wordt gebruikt.');
+      return;
+    }
+    try {
+      const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.file}`;
+      const res = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${cfg.token}`,
+          'Accept': 'application/vnd.github+json'
+        }
+      });
+      if (res.status === 404) {
+        // Bestand bestaat nog niet — maak het aan bij eerste opslag
+        this._fileSha = null;
+        this._loaded = true;
+        return;
+      }
+      if (!res.ok) throw new Error('GitHub API: ' + res.status);
+      const data = await res.json();
+      this._fileSha = data.sha;
+      const decoded = JSON.parse(atob(data.content.replace(/\n/g,'')));
+      const incoming = decoded.scores || decoded;
+      if (Array.isArray(incoming)) {
+        // Merge met lokale scores — GitHub is leidend
+        this._lsSet(this._key, JSON.stringify(incoming));
+      }
+      this._loaded = true;
+    } catch(e) {
+      console.warn('GitHub laden mislukt, lokale opslag gebruikt:', e.message);
+      this._loaded = true;
+    }
+  }
+
+  /* ── Sla scores op naar GitHub ── */
+  async saveToGitHub(scores) {
+    const cfg = GITHUB_CONFIG;
+    if (!cfg.owner || cfg.owner.includes('jouw-')) return { ok:false, msg:'GitHub niet geconfigureerd' };
+    try {
+      const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.file}`;
+      const content = btoa(unescape(encodeURIComponent(
+        JSON.stringify({ version:1, updated: new Date().toISOString(), scores }, null, 2)
+      )));
+      const body = {
+        message: 'Leaderboard update — TPA Route Builder',
+        content,
+        ...(this._fileSha ? { sha: this._fileSha } : {})
+      };
+      const res = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${cfg.token}`,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || res.status);
+      }
+      const data = await res.json();
+      this._fileSha = data.content.sha;
+      return { ok:true, msg:'Opgeslagen naar GitHub!' };
+    } catch(e) {
+      return { ok:false, msg:'GitHub opslaan mislukt: '+e.message };
+    }
+  }
+
+  /* ── Scores property ── */
+  get scores() {
+    try { return JSON.parse(this._lsGet(this._key)) || []; } catch(e) { return []; }
+  }
+
+  set scores(arr) {
+    this._lsSet(this._key, JSON.stringify(arr));
+  }
+
+  async addScore(entry) {
+    const all = this.scores;
+    all.push(entry);
+    all.sort((a,b) => b.score - a.score);
+    this.scores = all;
+    // Asynchroon opslaan naar GitHub
+    const result = await this.saveToGitHub(all);
+    return result;
+  }
+
+  clear() {
+    this._lsDel(this._key);
+    this.saveToGitHub([]);
+  }
+
+  _lsGet(k) {
+    if (this._useLS) { try { const v=localStorage.getItem(k); if(v!==null)return v; } catch(e){this._useLS=false;} }
+    return this._mem[k]||null;
+  }
+  _lsSet(k,v) {
+    if (this._useLS) { try { localStorage.setItem(k,v); this._mem[k]=v; return; } catch(e){this._useLS=false;} }
+    this._mem[k]=v;
+  }
+  _lsDel(k) {
+    if (this._useLS) { try { localStorage.removeItem(k); } catch(e){this._useLS=false;} }
+    delete this._mem[k];
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   CLASS: Timer — tijdsbonus berekening + balk animatie
+══════════════════════════════════════════════════════ */
+class Timer {
+  constructor(fillEl, lblEl, wrapEl, maxSecs=180) {
+    this._fill = fillEl;
+    this._lbl = lblEl;
+    this._wrap = wrapEl;
+    this._maxSecs = maxSecs;
+    this._start = null;
+    this._paused = false;
+    this._elapsed = 0;
+    this._raf = null;
+    this._levelIdx = 0;
+  }
+
+  setLevel(idx) { this._levelIdx = idx; }
+
+  calcBonus(elapsed) {
+    const tables = [
+      [10,100,15,90,25,75,35,60,50,45,65,30,85,20,105,12,130,7,155,3,180,1],
+      [10,200,15,175,25,150,35,120,50,90,65,65,85,45,105,28,130,15,155,6,180,2],
+      [10,350,15,300,25,250,35,200,50,150,65,110,85,75,105,45,130,25,155,10,180,3]
+    ];
+    const t = tables[this._levelIdx] || tables[0];
+    for (let i=0; i<t.length; i+=2) if (elapsed < t[i]) return t[i+1];
+    return 0;
+  }
+
+  begin() {
+    this.stop();
+    this._start = performance.now();
+    this._paused = false;
+    this._elapsed = 0;
+    if (this._wrap) this._wrap.style.display = 'flex';
+    this._tick();
+  }
+
+  pause() {
+    if (this._paused) return;
+    this._elapsed = (performance.now() - this._start) / 1000;
+    this._paused = true;
+    if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
+  }
+
+  resume() {
+    if (!this._paused) return;
+    this._paused = false;
+    this._start = performance.now() - this._elapsed * 1000;
+    this._tick();
+  }
+
+  stop() {
+    if (this._raf) { cancelAnimationFrame(this._raf); this._raf = null; }
+    if (this._wrap) this._wrap.style.display = 'none';
+    this._start = null;
+  }
+
+  getElapsed() {
+    if (!this._start) return 999;
+    return this._paused ? this._elapsed : (performance.now() - this._start) / 1000;
+  }
+
+  _tick() {
+    if (this._paused || !this._start) return;
+    const elapsed = (performance.now() - this._start) / 1000;
+    const pct = Math.max(0, 1 - elapsed/this._maxSecs) * 100;
+    const bonus = this.calcBonus(elapsed);
+    if (this._fill) {
+      this._fill.style.width = pct + '%';
+      this._fill.style.background = elapsed < 40
+        ? 'linear-gradient(90deg,#e07718,#ffe066)'
+        : elapsed < 80 ? 'linear-gradient(90deg,#c05010,#e07718)'
+        : 'linear-gradient(90deg,#c0281a,#e05010)';
+    }
+    if (this._lbl) {
+      this._lbl.textContent = '+' + bonus;
+      this._lbl.style.color = elapsed < 40 ? '#e07718' : elapsed < 80 ? '#c05010' : '#c0281a';
+    }
+    if (elapsed < this._maxSecs) {
+      this._raf = requestAnimationFrame(() => this._tick());
+    } else {
+      if (this._fill) this._fill.style.width = '0%';
+      if (this._lbl) { this._lbl.textContent = '+0'; this._lbl.style.color = '#bbb'; }
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   CLASS: Confetti
+══════════════════════════════════════════════════════ */
+class Confetti {
+  constructor(canvas, appEl) {
+    this._canvas = canvas;
+    this._app = appEl;
+    this._parts = [];
+    this._raf = null;
+    this._colors = ['#4a8520','#e07718','#d4eaaf','#c0281a','#fff','#7ab340','#ffe066','#2d5a12','#1a3a72'];
+  }
+
+  launch() {
+    this._canvas.width = this._app.offsetWidth;
+    this._canvas.height = this._app.offsetHeight;
+    this._canvas.style.display = 'block';
+    this._parts = [];
+    for (let i=0; i<130; i++) {
+      this._parts.push({
+        x: Math.random()*this._canvas.width, y: -10-Math.random()*180,
+        w: 7+Math.random()*9, h: 4+Math.random()*4,
+        color: this._colors[Math.floor(Math.random()*this._colors.length)],
+        rot: Math.random()*360, rotV: (Math.random()-.5)*7,
+        vy: 1.8+Math.random()*3.2, vx: (Math.random()-.5)*2.5, alpha: 1
+      });
+    }
+    if (this._raf) cancelAnimationFrame(this._raf);
+    const t0 = performance.now();
+    const step = now => {
+      const elapsed = now - t0;
+      const ctx = this._canvas.getContext('2d');
+      ctx.clearRect(0,0,this._canvas.width,this._canvas.height);
+      let alive = false;
+      this._parts.forEach(p => {
+        p.y += p.vy; p.x += p.vx; p.rot += p.rotV;
+        if (elapsed > 2000) p.alpha = Math.max(0, p.alpha - 0.02);
+        if (p.y < this._canvas.height+20 && p.alpha > 0) alive = true;
+        ctx.save(); ctx.globalAlpha = p.alpha;
+        ctx.translate(p.x, p.y); ctx.rotate(p.rot*Math.PI/180);
+        ctx.fillStyle = p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+        ctx.restore();
+      });
+      if (alive) this._raf = requestAnimationFrame(step);
+      else { this._canvas.style.display = 'none'; this._parts = []; }
+    };
+    this._raf = requestAnimationFrame(step);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   CLASS: RPARenderer — tekent de RPA procesflow op canvas
+══════════════════════════════════════════════════════ */
+class RPARenderer {
+  constructor(canvas, flashEl) {
+    this._cv = canvas;
+    this._flash = flashEl;
+    this.nodePos = {};
+    this.robotPos = {x:0, y:0};
+    this._animRAF = null;
+    this._CW = 0;
+    this._CH = 280;
+  }
+
+  resize() {
+    const par = this._cv.parentElement && this._cv.parentElement.parentElement;
+    this._CW = Math.max((par ? par.clientWidth : 640) - 32, 300);
+    this._cv.width = this._CW;
+    this._CH = this._cv.height || 280;
+  }
+
+  setHeight(h) { this._cv.height = h; this._CH = h; }
+
+  computePos(level, placed) {
+    this.nodePos = {};
+    const slots = level.correct[0].length;
+    const chain = ['start'].concat(
+      Array.from({length:slots}, (_,i) => placed[i] ? placed[i].id : '__s'+i)
+    ).concat(['end']);
+
+    if (level.twoRow) {
+      const row1 = chain.slice(0,4), row2 = chain.slice(4);
+      const mX=70, r1Y=this._CH*0.30, r2Y=this._CH*0.75;
+      const s1=(this._CW-mX*2)/(row1.length-1), s2=(this._CW-mX*2)/(row2.length-1);
+      row1.forEach((id,i) => { this.nodePos[id]={x:mX+i*s1, y:r1Y}; });
+      row2.forEach((id,i) => { this.nodePos[id]={x:mX+i*s2, y:r2Y}; });
+    } else {
+      const n = chain.length, mX=70, nY=this._CH/2+10, step=(this._CW-mX*2)/(n-1);
+      chain.forEach((id,i) => { this.nodePos[id]={x:mX+i*step, y:nY}; });
+    }
+  }
+
+  drawAll(level, placed, themeColor, themeDark) {
+    const ctx = this._cv.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0,0,this._CW,this._CH);
+    const slots = level.correct[0].length;
+    const chain = ['start'].concat(
+      Array.from({length:slots},(_,i) => placed[i]?placed[i].id:'__s'+i)
+    ).concat(['end']);
+
+    const draw = (ch) => {
+      for (let i=0; i<ch.length-1; i++) {
+        const a=this.nodePos[ch[i]], b=this.nodePos[ch[i+1]];
+        if (!a||!b) continue;
+        const solid = !ch[i].includes('__s') && !ch[i+1].includes('__s');
+        this._arrow(ctx, a.x,a.y, b.x,b.y, solid?themeColor:'#ccd8cc');
+      }
+      ch.forEach(id => {
+        const pos = this.nodePos[id]; if (!pos) return;
+        const p = level.pieces.find(x=>x.id===id);
+        if (id==='start') this._node(ctx,pos.x,pos.y,level.startLabel,level.startColor,true,false);
+        else if (id==='end') this._node(ctx,pos.x,pos.y,level.endLabel,level.endColor,true,false);
+        else if (id.startsWith('__s')) this._node(ctx,pos.x,pos.y,'',themeColor,false,true);
+        else if (p) this._node(ctx,pos.x,pos.y,p.label,themeColor,false,false);
+      });
+    };
+
+    if (level.twoRow) {
+      const row1=chain.slice(0,4), row2=chain.slice(4);
+      for (let i=0;i<row1.length-1;i++){
+        const a=this.nodePos[row1[i]],b=this.nodePos[row1[i+1]];
+        if(a&&b){const s=!row1[i].includes('__s')&&!row1[i+1].includes('__s');this._arrow(ctx,a.x,a.y,b.x,b.y,s?themeColor:'#ccd8cc');}
+      }
+      const er1=this.nodePos[row1[row1.length-1]], sr2=this.nodePos[row2[0]];
+      if(er1&&sr2){const bc=!row1[row1.length-1].includes('__s')&&!row2[0].includes('__s')?themeColor:'#ccd8cc';this._bend(ctx,er1.x,er1.y,sr2.x,sr2.y,bc);}
+      for (let i=0;i<row2.length-1;i++){
+        const a=this.nodePos[row2[i]],b=this.nodePos[row2[i+1]];
+        if(a&&b){const s=!row2[i].includes('__s')&&!row2[i+1].includes('__s');this._arrow(ctx,a.x,a.y,b.x,b.y,s?themeColor:'#ccd8cc');}
+      }
+      [...row1,...row2].forEach(id => {
+        const pos=this.nodePos[id]; if(!pos)return;
+        const p=level.pieces.find(x=>x.id===id);
+        if(id==='start')this._node(ctx,pos.x,pos.y,level.startLabel,level.startColor,true,false);
+        else if(id==='end')this._node(ctx,pos.x,pos.y,level.endLabel,level.endColor,true,false);
+        else if(id.startsWith('__s'))this._node(ctx,pos.x,pos.y,'',themeColor,false,true);
+        else if(p)this._node(ctx,pos.x,pos.y,p.label,themeColor,false,false);
+      });
+    } else { draw(chain); }
+
+    this._drawRobot(ctx, this.robotPos.x, this.robotPos.y, themeDark);
+  }
+
+  _node(ctx,cx,cy,label,color,fixed,isSlot) {
+    const w=fixed?80:90, h=46, r=fixed?23:10;
+    ctx.beginPath();
+    if (isSlot) {
+      ctx.roundRect(cx-w/2,cy-h/2,w,h,r);
+      ctx.fillStyle='rgba(0,0,0,.04)'; ctx.fill();
+      ctx.strokeStyle=color; ctx.lineWidth=2; ctx.setLineDash([5,4]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle=color; ctx.font='bold 22px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('?',cx,cy);
+    } else {
+      ctx.roundRect(cx-w/2,cy-h/2,w,h,r);
+      ctx.fillStyle=color; ctx.fill();
+      ctx.strokeStyle=fixed?'#1a2012':'#c5d9a0'; ctx.lineWidth=fixed?2:1.5; ctx.stroke();
+      const lines = label.split('\n');
+      ctx.fillStyle='#fff'; ctx.font='bold 11px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      lines.forEach((l,i) => ctx.fillText(l,cx,cy+(i-(lines.length-1)/2)*12));
+    }
+  }
+
+  _arrow(ctx,x1,y1,x2,y2,color) {
+    const hw=50, dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy);
+    if (len<1) return;
+    const ux=dx/len, uy=dy/len;
+    const sx=x1+ux*hw, sy=y1+uy*hw, ex=x2-ux*hw, ey=y2-uy*hw;
+    ctx.strokeStyle=color; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.stroke();
+    const ang=Math.atan2(ey-sy,ex-sx), hs=9;
+    ctx.fillStyle=color; ctx.beginPath(); ctx.moveTo(ex,ey);
+    ctx.lineTo(ex-hs*Math.cos(ang-.42),ey-hs*Math.sin(ang-.42));
+    ctx.lineTo(ex-hs*Math.cos(ang+.42),ey-hs*Math.sin(ang+.42));
+    ctx.closePath(); ctx.fill();
+  }
+
+  _bend(ctx,x1,y1,x2,y2,color) {
+    const midY=(y1+y2)/2;
+    ctx.strokeStyle=color; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(x1,y1+22); ctx.lineTo(x1,midY); ctx.lineTo(x2,midY); ctx.lineTo(x2,y2-22); ctx.stroke();
+    ctx.fillStyle=color; ctx.beginPath(); ctx.moveTo(x2,y2-22);
+    ctx.lineTo(x2-8,y2-34); ctx.lineTo(x2+8,y2-34); ctx.closePath(); ctx.fill();
+  }
+
+  _drawRobot(ctx,cx,cy,themeDark) {
+    const ry = cy-58;
+    ctx.fillStyle='#fff'; ctx.strokeStyle=themeDark; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.roundRect(cx-14,ry-12,28,24,5); ctx.fill(); ctx.stroke();
+    ctx.font='18px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(String.fromCodePoint(0x1F916),cx,ry);
+    ctx.fillStyle='#fff'; ctx.strokeStyle=themeDark; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(cx-5,ry+12); ctx.lineTo(cx+5,ry+12); ctx.lineTo(cx,ry+20);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+  }
+
+  animateRobot(tx,ty,cb,drawFn) {
+    if (this._animRAF) cancelAnimationFrame(this._animRAF);
+    const sx=this.robotPos.x, sy=this.robotPos.y, t0=performance.now(), dur=460;
+    const lerp=(a,b,t)=>a+(b-a)*t;
+    const step = now => {
+      const t=Math.min((now-t0)/dur,1), e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+      this.robotPos.x=lerp(sx,tx,e); this.robotPos.y=lerp(sy,ty,e);
+      if(drawFn) drawFn();
+      if (t<1) this._animRAF=requestAnimationFrame(step);
+      else { this.robotPos.x=tx; this.robotPos.y=ty; if(cb)cb(); }
+    };
+    this._animRAF = requestAnimationFrame(step);
+  }
+
+  stopAnim() { if (this._animRAF) { cancelAnimationFrame(this._animRAF); this._animRAF=null; } }
+
+  flash(color) {
+    if (!this._flash) return;
+    this._flash.style.transition='none'; this._flash.style.background=color; this._flash.style.opacity='0.5';
+    setTimeout(() => { this._flash.style.transition='opacity .45s'; this._flash.style.opacity='0'; }, 140);
+  }
+
+  addClickHandler(level, placed, onRemove) {
+    this._cv.onclick = e => {
+      const rect=this._cv.getBoundingClientRect();
+      const mx=(e.clientX-rect.left)*(this._CW/rect.width);
+      const my=(e.clientY-rect.top)*(this._CH/rect.height);
+      for (let i=placed.length-1; i>=0; i--) {
+        const pos=this.nodePos[placed[i].id];
+        if (pos && Math.abs(mx-pos.x)<47 && Math.abs(my-pos.y)<23) { onRemove(i); return; }
+      }
+    };
+  }
+
+  addDragHandler(onDrop) {
+    this._cv.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect='move'; });
+    this._cv.addEventListener('drop', e => { e.preventDefault(); onDrop(); });
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   CLASS: BPMNRenderer — tekent BPMN2.0 procesflow op canvas
+══════════════════════════════════════════════════════ */
+class BPMNRenderer {
+  constructor(canvas, flashEl) {
+    this._cv = canvas;
+    this._flash = flashEl;
+    this.nodePos = {};
+    this._CW = 0;
+    this._CH = 320;
+    this.CAM_COLORS = { main:'#4a2aaa', dark:'#2d1570', light:'#f0f0ff', border:'#c0b8f0', gateway:'#8a4400' };
+  }
+
+  resize() {
+    const par = this._cv.parentElement && this._cv.parentElement.parentElement;
+    this._CW = Math.max((par ? par.clientWidth : 640) - 32, 300);
+    this._cv.width = this._CW;
+    this._CH = this._cv.height || 320;
+  }
+
+  setHeight(h) { this._cv.height = h; this._CH = h; }
+
+  computePos(level, placed) {
+    this.nodePos = {};
+    const slots = level.correct[0].length;
+    if (level.twoRow) {
+      const chain = ['start'].concat(Array.from({length:slots},(_,i)=>placed[i]?placed[i].id:'__s'+i)).concat(['end']);
+      const row1=chain.slice(0,4), row2=chain.slice(4);
+      const mX=70, r1Y=this._CH*0.28, r2Y=this._CH*0.75;
+      row1.forEach((id,i) => { this.nodePos[id]={x:mX+i*(this._CW-mX*2)/(row1.length-1),y:r1Y}; });
+      row2.forEach((id,i) => { this.nodePos[id]={x:mX+i*(this._CW-mX*2)/(row2.length-1),y:r2Y}; });
+    } else {
+      const chain=['start'].concat(Array.from({length:slots},(_,i)=>placed[i]?placed[i].id:'__s'+i)).concat(['end']);
+      const n=chain.length, mX=70, nY=this._CH/2+10, step=(this._CW-mX*2)/(n-1);
+      chain.forEach((id,i) => { this.nodePos[id]={x:mX+i*step,y:nY}; });
+    }
+  }
+
+  drawAll(level, placed) {
+    const ctx = this._cv.getContext('2d'); if (!ctx) return;
+    ctx.clearRect(0,0,this._CW,this._CH);
+    /* Raster achtergrond */
+    ctx.fillStyle='#fafafa'; ctx.fillRect(0,0,this._CW,this._CH);
+    ctx.strokeStyle='#e8e8f0'; ctx.lineWidth=1;
+    for(let gx=0;gx<this._CW;gx+=30){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,this._CH);ctx.stroke();}
+    for(let gy=0;gy<this._CH;gy+=30){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(this._CW,gy);ctx.stroke();}
+
+    const slots=level.correct[0].length;
+    const chain=['start'].concat(Array.from({length:slots},(_,i)=>placed[i]?placed[i].id:'__s'+i)).concat(['end']);
+    const getP = id => level.pieces.find(x=>x.id===id)||null;
+
+    const drawChain = ch => {
+      for(let i=0;i<ch.length-1;i++){
+        const a=this.nodePos[ch[i]],b=this.nodePos[ch[i+1]];
+        if(!a||!b)continue;
+        const solid=!ch[i].includes('__s')&&!ch[i+1].includes('__s');
+        this._bpmnArrow(ctx,a.x,a.y,b.x,b.y,getP(ch[i]),getP(ch[i+1]),ch[i],ch[i+1],solid);
+      }
+      ch.forEach(id=>{
+        const pos=this.nodePos[id];if(!pos)return;
+        if(id==='start')this._bpmnEvent(ctx,pos.x,pos.y,'start',level.startLabel);
+        else if(id==='end')this._bpmnEvent(ctx,pos.x,pos.y,'end',level.endLabel);
+        else if(id.startsWith('__s'))this._bpmnSlot(ctx,pos.x,pos.y);
+        else{const p=getP(id);if(p)this._bpmnElement(ctx,pos.x,pos.y,p);}
+      });
+    };
+
+    if(level.twoRow){
+      const row1=chain.slice(0,4),row2=chain.slice(4);
+      for(let i=0;i<row1.length-1;i++){const a=this.nodePos[row1[i]],b=this.nodePos[row1[i+1]];if(a&&b){const s=!row1[i].includes('__s')&&!row1[i+1].includes('__s');this._bpmnArrow(ctx,a.x,a.y,b.x,b.y,getP(row1[i]),getP(row1[i+1]),row1[i],row1[i+1],s);}}
+      const er1=this.nodePos[row1[row1.length-1]],sr2=this.nodePos[row2[0]];
+      if(er1&&sr2){const bc=!row1[row1.length-1].includes('__s')&&!row2[0].includes('__s')?this.CAM_COLORS.main:'#c8c0e8';this._bpmnBend(ctx,er1.x,er1.y,sr2.x,sr2.y,bc);}
+      for(let i=0;i<row2.length-1;i++){const a=this.nodePos[row2[i]],b=this.nodePos[row2[i+1]];if(a&&b){const s=!row2[i].includes('__s')&&!row2[i+1].includes('__s');this._bpmnArrow(ctx,a.x,a.y,b.x,b.y,getP(row2[i]),getP(row2[i+1]),row2[i],row2[i+1],s);}}
+      [...row1,...row2].forEach(id=>{const pos=this.nodePos[id];if(!pos)return;if(id==='start')this._bpmnEvent(ctx,pos.x,pos.y,'start',level.startLabel);else if(id==='end')this._bpmnEvent(ctx,pos.x,pos.y,'end',level.endLabel);else if(id.startsWith('__s'))this._bpmnSlot(ctx,pos.x,pos.y);else{const p=getP(id);if(p)this._bpmnElement(ctx,pos.x,pos.y,p);}});
+    } else { drawChain(chain); }
+  }
+
+  _edgePt(cx,cy,rx,ry,shape,tx,ty){
+    const dx=tx-cx,dy=ty-cy,dist=Math.sqrt(dx*dx+dy*dy);if(dist<1)return{x:cx,y:cy};
+    const ux=dx/dist,uy=dy/dist;
+    if(shape==='circle'){return{x:cx+ux*rx,y:cy+uy*ry};}
+    if(shape==='diamond'){const t1=rx/Math.abs(ux||0.001),t2=ry/Math.abs(uy||0.001),t=Math.min(t1,t2);return{x:cx+ux*t,y:cy+uy*t};}
+    const t1=rx/Math.abs(ux||0.001),t2=ry/Math.abs(uy||0.001),t=Math.min(t1,t2);return{x:cx+ux*t,y:cy+uy*t};
+  }
+
+  _nodeRadius(p,id){
+    if(!p&&(id==='start'||id==='end'))return{rx:26,ry:26,shape:'circle'};
+    if(!p)return{rx:52,ry:27,shape:'rect'};
+    if(p.type==='gateway')return{rx:48,ry:36,shape:'diamond'};
+    return{rx:52,ry:29,shape:'rect'};
+  }
+
+  _bpmnArrow(ctx,x1,y1,x2,y2,p1,p2,id1,id2,solid){
+    const col=solid?this.CAM_COLORS.main:'#c8c0e8';
+    const r1=this._nodeRadius(p1,id1),r2=this._nodeRadius(p2,id2);
+    const from=this._edgePt(x1,y1,r1.rx,r1.ry,r1.shape,x2,y2);
+    const to=this._edgePt(x2,y2,r2.rx,r2.ry,r2.shape,x1,y1);
+    ctx.strokeStyle=col; ctx.lineWidth=solid?2:1.5;
+    if(!solid)ctx.setLineDash([6,4]);
+    ctx.beginPath(); ctx.moveTo(from.x,from.y); ctx.lineTo(to.x,to.y); ctx.stroke();
+    ctx.setLineDash([]);
+    if(!solid)return;
+    const ang=Math.atan2(to.y-from.y,to.x-from.x),hs=10;
+    ctx.strokeStyle=col; ctx.lineWidth=1.8; ctx.fillStyle='#fafafa';
+    ctx.beginPath();
+    ctx.moveTo(to.x-hs*Math.cos(ang-0.45),to.y-hs*Math.sin(ang-0.45));
+    ctx.lineTo(to.x,to.y);
+    ctx.lineTo(to.x-hs*Math.cos(ang+0.45),to.y-hs*Math.sin(ang+0.45));
+    ctx.stroke();
+  }
+
+  _bpmnBend(ctx,x1,y1,x2,y2,col){
+    const midY=(y1+y2)/2;
+    ctx.strokeStyle=col; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(x1,y1+24); ctx.lineTo(x1,midY); ctx.lineTo(x2,midY); ctx.lineTo(x2,y2-24); ctx.stroke();
+    ctx.strokeStyle=col; ctx.lineWidth=1.8;
+    ctx.beginPath(); ctx.moveTo(x2-8,y2-34); ctx.lineTo(x2,y2-24); ctx.lineTo(x2+8,y2-34); ctx.stroke();
+  }
+
+  _bpmnSlot(ctx,cx,cy){
+    ctx.save(); ctx.shadowColor='rgba(74,42,170,.15)'; ctx.shadowBlur=6;
+    ctx.beginPath(); ctx.roundRect(cx-50,cy-26,100,52,9);
+    ctx.fillStyle='#f5f0ff'; ctx.fill(); ctx.restore();
+    ctx.strokeStyle='#8866dd'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+    ctx.beginPath(); ctx.roundRect(cx-50,cy-26,100,52,9); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#8866dd'; ctx.font='bold 24px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('?',cx,cy);
+  }
+
+  _bpmnEvent(ctx,cx,cy,type,label){
+    const r=26;
+    ctx.save(); ctx.shadowColor='rgba(74,42,170,.25)'; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.fillStyle=type==='start'?'#4a2aaa':'#2d1570'; ctx.fill(); ctx.restore();
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.strokeStyle='#fff'; ctx.lineWidth=type==='end'?3:2; ctx.stroke();
+    if(type==='end'){ctx.beginPath();ctx.arc(cx,cy,r-5,0,Math.PI*2);ctx.strokeStyle='rgba(255,255,255,.5)';ctx.lineWidth=2;ctx.stroke();}
+    const lines=label.split('\n');
+    ctx.fillStyle='#2d1570'; ctx.font='bold 9px Arial'; ctx.textAlign='center'; ctx.textBaseline='top';
+    lines.forEach((l,i)=>ctx.fillText(l,cx,cy+r+4+i*11));
+  }
+
+  _bpmnElement(ctx,cx,cy,p){
+    if(p.type==='gateway'){this._bpmnGateway(ctx,cx,cy,p);}else{this._bpmnTask(ctx,cx,cy,p);}
+  }
+
+  _bpmnTask(ctx,cx,cy,p){
+    const col={service:'#1e5fa8',user:'#0a6e47',wrong:'#a02018'}[p.type]||'#4a2aaa';
+    const w=100,h=56,r=9;
+    ctx.save(); ctx.shadowColor='rgba(0,0,0,.18)'; ctx.shadowBlur=8; ctx.shadowOffsetY=3;
+    ctx.beginPath(); ctx.roundRect(cx-w/2,cy-h/2,w,h,r); ctx.fillStyle=col; ctx.fill(); ctx.restore();
+    ctx.beginPath(); ctx.roundRect(cx-w/2,cy-h/2,w,h/2,r); ctx.fillStyle='rgba(255,255,255,.12)'; ctx.fill();
+    ctx.beginPath(); ctx.roundRect(cx-w/2,cy-h/2,w,h,r); ctx.strokeStyle='rgba(255,255,255,.3)'; ctx.lineWidth=1; ctx.stroke();
+    try{ctx.font='12px Arial';ctx.textAlign='left';ctx.textBaseline='top';ctx.fillStyle='rgba(255,255,255,.9)';ctx.fillText(String.fromCodePoint(p.type==='service'?0x2699:p.type==='user'?0x1F464:0x2717),cx-w/2+5,cy-h/2+4);}catch(e){}
+    const tl=p.label.split('\n');
+    ctx.fillStyle='#fff'; ctx.font='bold 9.5px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    tl.forEach((l,i)=>ctx.fillText(l,cx,cy+(i-(tl.length-1)/2)*12));
+  }
+
+  _bpmnGateway(ctx,cx,cy,p){
+    const gw=48,gh=36;
+    ctx.save(); ctx.shadowColor='rgba(0,0,0,.2)'; ctx.shadowBlur=8; ctx.shadowOffsetY=3;
+    ctx.beginPath(); ctx.moveTo(cx,cy-gh); ctx.lineTo(cx+gw,cy); ctx.lineTo(cx,cy+gh); ctx.lineTo(cx-gw,cy); ctx.closePath();
+    ctx.fillStyle='#8a4400'; ctx.fill(); ctx.restore();
+    const grad=ctx.createLinearGradient(cx-gw,cy-gh,cx+gw,cy+gh);
+    grad.addColorStop(0,'rgba(255,255,255,.15)'); grad.addColorStop(1,'rgba(0,0,0,.1)');
+    ctx.beginPath(); ctx.moveTo(cx,cy-gh); ctx.lineTo(cx+gw,cy); ctx.lineTo(cx,cy+gh); ctx.lineTo(cx-gw,cy); ctx.closePath();
+    ctx.fillStyle=grad; ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.3)'; ctx.lineWidth=1.5; ctx.stroke();
+    const sym=p.label.includes('XOR')?'X':p.label.includes('Split')||p.label.includes('Join')||p.label.includes('Parallel')?'+':p.label.includes('OR')?'O':'?';
+    ctx.fillStyle='#fff'; ctx.font='bold 20px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(sym,cx,cy+1);
+    const gl=p.label.split('\n');
+    ctx.fillStyle='#5a2800'; ctx.font='bold 9px Arial'; ctx.textAlign='center'; ctx.textBaseline='top';
+    gl.forEach((l,i)=>ctx.fillText(l,cx,cy+gh+6+i*10));
+  }
+
+  flash(color){
+    if(!this._flash)return;
+    this._flash.style.transition='none'; this._flash.style.background=color; this._flash.style.opacity='0.5';
+    setTimeout(()=>{this._flash.style.transition='opacity .45s'; this._flash.style.opacity='0';},140);
+  }
+
+  addClickHandler(level,placed,onRemove){
+    this._cv.onclick=e=>{
+      const rect=this._cv.getBoundingClientRect();
+      const mx=(e.clientX-rect.left)*(this._CW/rect.width),my=(e.clientY-rect.top)*(this._CH/rect.height);
+      for(let i=placed.length-1;i>=0;i--){
+        const pos=this.nodePos[placed[i].id];
+        if(pos&&Math.abs(mx-pos.x)<50&&Math.abs(my-pos.y)<26){onRemove(i);return;}
+      }
+    };
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   CLASS: GameEngine — gedeelde game logica
+══════════════════════════════════════════════════════ */
+class GameEngine {
+  constructor(storage, timer, ui) {
+    this._storage = storage;
+    this._timer = timer;
+    this._ui = ui;
+    this.levelIdx = 0;
+    this.placed = [];
+    this.penalties = 0;
+    this.hintsUsed = 0;
+    this.scoreSaved = false;
+    this.earnedPts = 0;
+    this.lastBase = 0;
+    this.lastTime = 0;
+    this.lastPerfect = 0;
+  }
+
+  get currentLevel() { return this.levels[this.levelIdx]; }
+  get maxPts() { return this.currentLevel.maxPts; }
+  get currentPts() { return Math.max(0, this.maxPts - this.penalties); }
+
+  get themeColor() { return '#4a8520'; }
+  get themeDark() { return '#2d5a12'; }
+  get penaltyAmount() { return [15,30,50][this.levelIdx] || 15; }
+
+  selectLevel(idx) {
+    this.levelIdx = idx;
+    this._ui.showStartScreen(this);
+  }
+
+  beginLevel() {
+    this.placed = [];
+    this.penalties = 0;
+    this.hintsUsed = 0;
+    this.scoreSaved = false;
+    this._timer.setLevel(this.levelIdx);
+    this._ui.setupGameScreen(this);
+    this._timer.begin();
+  }
+
+  resetLevel() { this.beginLevel(); }
+
+  addPiece(piece) {
+    if (this.placed.find(p => p.id === piece.id)) return;
+    if (this.placed.length >= this.currentLevel.correct[0].length) {
+      this._ui.showFeedback('Alle vakjes zijn gevuld! Klik op een geplaatst stukje om het terug te zetten.','warn');
+      return;
+    }
+    this.placed.push(piece);
+    this._ui.onPieceAdded(this, piece);
+  }
+
+  removePiece(idx) {
+    const p = this.placed[idx];
+    this.placed.splice(idx,1);
+    this._ui.onPieceRemoved(this, p);
+    this._ui.showFeedback('\u201e'+p.label.replace(/\n/g,' ')+'\u201d verwijderd uit de route.','warn',2500);
+  }
+
+  check() {
+    this._timer.pause();
+    const lv = this.currentLevel;
+    const ids = this.placed.map(p=>p.id);
+    const pen = this.penaltyAmount;
+
+    const wrongOnes = ids.filter(id => { const p=lv.pieces.find(x=>x.id===id); return p&&p.wrong; });
+    if (wrongOnes.length > 0) {
+      this.penalties += pen;
+      this._ui.updatePtsBar(this);
+      this._ui.flashCanvas();
+      const names = wrongOnes.map(id=>{const p=lv.pieces.find(x=>x.id===id);return p?p.label.replace(/\n/g,' '):''}).join(', ');
+      wrongOnes.forEach(id=>{const el=document.getElementById('pc-'+id);if(el){el.classList.add('wrong-anim');setTimeout(()=>el.classList.remove('wrong-anim'),400);}});
+      if (this.currentPts <= 0) { setTimeout(()=>this._ui.showGameOver(this),600); return; }
+      this._ui.showFeedback('\u201e'+names+'\u201d hoort niet in dit proces. \u2212'+pen+' punten.','err');
+      this._timer.resume();
+      return;
+    }
+
+    let correct = false;
+    lv.correct.forEach(cs => {
+      if (cs.length !== ids.length) return;
+      if (cs.every((id,i) => ids[i]===id)) correct = true;
+    });
+
+    if (correct) {
+      this.lastBase = this.currentPts;
+      this.lastTime = this._timer.calcBonus(this._timer.getElapsed());
+      this.lastPerfect = this.penalties===0 ? 50 : 0;
+      this.earnedPts = this.lastBase + this.lastTime + this.lastPerfect;
+      this._timer.stop();
+      this._ui.onCorrect(this);
+    } else {
+      this.penalties += pen;
+      this._ui.updatePtsBar(this);
+      this._ui.flashCanvas();
+      const setOk = lv.correct.some(cs=>cs.length===ids.length&&cs.every(id=>ids.includes(id)));
+      const extra = setOk ? ' Let op de volgorde van de stappen!' : '';
+      if (this.currentPts <= 0) { setTimeout(()=>this._ui.showGameOver(this),600); return; }
+      this._ui.showFeedback('Niet de juiste combinatie van stappen.'+extra+' Gebruik een hint of pas je route aan. \u2212'+pen+' punten.','err');
+      this._timer.resume();
+    }
+  }
+
+  useHint() {
+    const max = [3,2,1][this.levelIdx]||1;
+    if (this.hintsUsed >= max) return;
+    this._ui.showFeedback(this.currentLevel.hints[this.hintsUsed],'hint',8000);
+    this.hintsUsed++;
+    this._ui.updatePips(this);
+  }
+
+  async saveScore(name) {
+    if (this.scoreSaved) return {ok:false,msg:'Al opgeslagen'};
+    const lv = this.levelIdx+1;
+    const mode = this.mode;
+    const dup = this._storage.scores.find(s=>s.name.toLowerCase()===name.toLowerCase()&&s.level===lv&&s.mode===mode);
+    if (dup) return {ok:false,msg:'\u201e'+name+'\u201d staat al op het leaderboard voor '+mode.toUpperCase()+' Level '+lv+'. Kies een andere naam.'};
+    const d=new Date();
+    const dd=d.getDate()<10?'0'+d.getDate():''+d.getDate();
+    const mm=d.getMonth()<9?'0'+(d.getMonth()+1):''+(d.getMonth()+1);
+    const ghResult = await this._storage.addScore({name,score:this.earnedPts,max:this.currentLevel.maxPts,level:lv,mode,date:dd+'/'+mm});
+    this.scoreSaved = true;
+    return {ok:true, github: ghResult};
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   CLASS: RPAGame extends GameEngine
+══════════════════════════════════════════════════════ */
+class RPAGame extends GameEngine {
+  constructor(storage, timer, ui) {
+    super(storage, timer, ui);
+    this.mode = 'rpa';
+    this.levels = [
+      {
+        title:'Factuurverwerking',
+        desc:'Een leverancier stuurt een factuur. Leg de juiste stappen vast zodat de robot de factuur automatisch verwerkt en boekt in SAP.',
+        maxPts:100, twoRow:false, strictOrder:true,
+        startLabel:'Factuur\nontvangen', startColor:'#2d5a12',
+        endLabel:'Geboekt\nin SAP', endColor:'#2d5a12',
+        pieces:[
+          {id:'ocr',     label:'PDF\nuitlezen',        icon:'\uD83D\uDD0D', wrong:false},
+          {id:'validate',label:'Gegevens\nvalideren',   icon:'\u2705',       wrong:false},
+          {id:'approve', label:'Goedkeuring\ncontrole', icon:'\uD83D\uDC64', wrong:false},
+          {id:'wrong1',  label:'Factuur\nweggooien',    icon:'\uD83D\uDDD1', wrong:true},
+          {id:'wrong2',  label:'Direct\nbetalen',       icon:'\uD83D\uDCB8', wrong:true}
+        ],
+        correct:[['ocr','validate','approve'],['ocr','approve','validate']],
+        hints:[
+          '\uD83D\uDCA1 Tip 1: De robot leest altijd eerst de PDF uit. Hij moet de gegevens kennen voordat hij een volgende stap zet.',
+          '\uD83D\uDCA1 Tip 2: De gegevens worden gevalideerd v\u00F3\u00F3rdat er om goedkeuring gevraagd wordt.',
+          '\uD83D\uDCA1 Tip 3: 3 stukjes: PDF uitlezen \u2192 Gegevens valideren \u2192 Goedkeuringscontrole.'
+        ],
+        expl:'Correct pad: PDF uitlezen \u2192 Gegevens valideren \u2192 Goedkeuringscontrole \u2192 Boeken in SAP.'
+      },
+      {
+        title:'Inkooporder verwerken',
+        desc:'Er is een nieuwe bestelling binnengekomen. De robot controleert het budget en dubbele bestellingen, en stuurt door naar inkoop.',
+        maxPts:200, twoRow:false, strictOrder:true,
+        startLabel:'Bestelling\nontvangen', startColor:'#7a3c00',
+        endLabel:'Doorgestuurd\nnaar inkoop', endColor:'#e07718',
+        pieces:[
+          {id:'lees',      label:'Bestelling\nuitlezen',    icon:'\uD83D\uDD0D', wrong:false},
+          {id:'budget',    label:'Budget\ncheck',           icon:'\uD83D\uDCB8', wrong:false},
+          {id:'dubbel',    label:'Dubbele\nbestelling?',    icon:'\uD83D\uDD01', wrong:false},
+          {id:'goedkeuring',label:'Manager\ngoedkeuring',  icon:'\uD83D\uDC64', wrong:false},
+          {id:'leverancier',label:'Leverancier\ncheck',    icon:'\uD83D\uDCE6', wrong:false},
+          {id:'wrong1',    label:'Direct\nbestellen',      icon:'\u2705',        wrong:true},
+          {id:'wrong2',    label:'Bestelling\nnegeren',    icon:'\uD83D\uDE48', wrong:true}
+        ],
+        correct:[
+          ['lees','budget','dubbel','goedkeuring'],
+          ['lees','dubbel','budget','goedkeuring'],
+          ['lees','budget','goedkeuring','dubbel']
+        ],
+        hints:[
+          '\uD83D\uDCA1 Tip 1: Begin met het uitlezen van de bestelling.',
+          '\uD83D\uDCA1 Tip 2: Controleer budget en dubbele bestellingen v\u00F3\u00F3r goedkeuring.'
+        ],
+        expl:'Correct pad: Bestelling uitlezen \u2192 Budgetcheck \u2192 Dubbele bestelling check \u2192 Manager goedkeuring \u2192 Inkoop.'
+      },
+      {
+        title:'Maandafsluiting \u2014 volledig proces',
+        desc:'5 facturen in de wachtrij. Doel: alles verwerkt en log opgeslagen. Bouw het volledige proces met 6 stappen.',
+        maxPts:350, twoRow:true, strictOrder:true,
+        startLabel:'5 facturen\nin wachtrij', startColor:'#2d5a12',
+        endLabel:'Verwerkt\n& log', endColor:'#2d5a12',
+        pieces:[
+          {id:'scan',    label:'Mailbox\nscannen',      icon:'\uD83D\uDCE7', wrong:false},
+          {id:'ocr',     label:'OCR +\ndata extract',   icon:'\uD83D\uDD0D', wrong:false},
+          {id:'bedrag',  label:'Bedrag-\ncheck',        icon:'\u2692',       wrong:false},
+          {id:'dupcheck',label:'Duplicaat\ncheck',      icon:'\uD83D\uDD01', wrong:false},
+          {id:'sap',     label:'SAP\nboeken',           icon:'\uD83D\uDCDA', wrong:false},
+          {id:'betaal',  label:'Betaling\nklaarzetten', icon:'\uD83D\uDCB3', wrong:false},
+          {id:'wrong1',  label:'Handmatig\novertikken', icon:'\u2328',       wrong:true},
+          {id:'wrong2',  label:'Skip\nchecks',          icon:'\u23E9',       wrong:true},
+          {id:'wrong3',  label:'E-mail\nnegeren',       icon:'\uD83D\uDE48', wrong:true}
+        ],
+        correct:[
+          ['scan','ocr','bedrag','dupcheck','sap','betaal'],
+          ['scan','ocr','dupcheck','bedrag','sap','betaal']
+        ],
+        hints:['\uD83D\uDCA1 Tip 1: Eerst mailbox scannen, dan OCR. Handmatig overtikken is wat RPA vervangt!'],
+        expl:'Correct: Mailbox scannen \u2192 OCR \u2192 Bedragcheck \u2192 Duplicaatcheck \u2192 SAP boeken \u2192 Betaling klaarzetten.'
+      }
+    ];
+  }
+
+  get themeColor() { return ['#4a8520','#e07718','#1a3a72'][this.levelIdx]||'#4a8520'; }
+  get themeDark()  { return ['#2d5a12','#7a3c00','#0c2550'][this.levelIdx]||'#2d5a12'; }
+  get themeLight() { return ['#f4f8ee','#fff8f0','#eef3ff'][this.levelIdx]||'#f4f8ee'; }
+  get themeBorder(){ return ['#c5d9a0','#f5d5aa','#b5c8f0'][this.levelIdx]||'#c5d9a0'; }
+  get levelIcon()  { return ['\uD83D\uDCC4','\uD83D\uDCE6','\uD83D\uDD10'][this.levelIdx]||'\uD83E\uDD16'; }
+  get levelLabel() { return 'Level '+(this.levelIdx+1)+' \u2014 '+['Financi\u00EBn','Inkoop & Logistiek','Autorisatiebeheer'][this.levelIdx]; }
+}
+
+/* ══════════════════════════════════════════════════════
+   CLASS: CamundaGame extends GameEngine
+══════════════════════════════════════════════════════ */
+class CamundaGame extends GameEngine {
+  constructor(storage, timer, ui) {
+    super(storage, timer, ui);
+    this.mode = 'camunda';
+    this.levels = [
+      {
+        title:'Verlofaanvraag \u2014 Alliander systemen',
+        desc:'Een Alliander-medewerker vraagt verlof aan. Het proces loopt door Workday, Outlook en SID. De manager beslist via een XOR-gateway.',
+        maxPts:100, twoRow:false, strictOrder:true,
+        startLabel:'Verlof\naanvraag', startColor:'#4a2aaa',
+        endLabel:'Verlof\nverwerkt', endColor:'#4a2aaa',
+        pieces:[
+          {id:'wd_verwerk',  label:'Service Task\nWorkday:\nVerlof registreren',  icon:'ST', type:'service', wrong:false, bpmn:'Service Task \u2014 Workday: het HR-systeem van Alliander registreert automatisch de verlofaanvraag en controleert het saldo.'},
+          {id:'ut_manager',  label:'User Task\nManager:\nGoedkeuren',              icon:'UT', type:'user',    wrong:false, bpmn:'User Task \u2014 Manager: de leidinggevende beoordeelt de aanvraag in Workday en keurt goed of af.'},
+          {id:'gw_xor',      label:'XOR Gateway\nGoedgekeurd?',                   icon:'XG', type:'gateway', wrong:false, bpmn:'Exclusive Gateway (XOR): precies \u00E9\u00E9n pad wordt gevolgd op basis van de beslissing. Symbool: ruit met X.'},
+          {id:'out_agenda',  label:'Service Task\nOutlook:\nAgenda blokkeren',     icon:'ST', type:'service', wrong:false, bpmn:'Service Task \u2014 Outlook: bij goedkeuring blokkeert het systeem automatisch de verlofperiode in Outlook.'},
+          {id:'sid_deleg',   label:'Service Task\nSID:\nDelegatie instellen',      icon:'ST', type:'service', wrong:false, bpmn:'Service Task \u2014 SID: verantwoordelijkheden worden automatisch gedelegeerd aan een vervanger.'},
+          {id:'wrong_par',   label:'Parallel GW\nSplit (+)',                       icon:'AG', type:'wrong',   wrong:true,  bpmn:'Fout: Parallel Gateway laat ALLE paden tegelijk lopen. Bij een ja/nee beslissing gebruik je XOR.'},
+          {id:'wrong_wf',    label:'Service Task\nWorkday:\nSalaris verwerken',    icon:'ST', type:'wrong',   wrong:true,  bpmn:'Fout: salarisverwerking is een apart proces en hoort niet in een verlofaanvraagflow.'}
+        ],
+        correct:[['wd_verwerk','ut_manager','gw_xor','out_agenda','sid_deleg'],['wd_verwerk','ut_manager','gw_xor','sid_deleg','out_agenda']],
+        hints:[
+          '\uD83D\uDCA1 Tip 1: Begin altijd in Workday \u2014 het HR-systeem. Daarna beslist de manager.',
+          '\uD83D\uDCA1 Tip 2: Na de manager-beslissing komt een XOR Gateway (ruit met X). Agenda blokkeren \u00E9n delegatie instellen komen daarna.'
+        ],
+        expl:'Correct pad: Workday registreren \u2192 Manager goedkeuren \u2192 XOR Gateway \u2192 Outlook agenda blokkeren \u2192 SID delegatie instellen.'
+      },
+      {
+        title:'Onboarding nieuwe medewerker \u2014 Parallelle systemen',
+        desc:'Een nieuwe Alliander-medewerker start. Active Directory, Workday en SID werken tegelijk. Gebruik Parallel Gateways. Let op de volgorde: split \u2192 taken \u2192 join!',
+        maxPts:200, twoRow:true, strictOrder:true,
+        startLabel:'Medewerker\ngestart', startColor:'#4a2aaa',
+        endLabel:'Onboarding\nvolledig', endColor:'#4a2aaa',
+        pieces:[
+          {id:'gw_split',  label:'Parallel GW\nSplit (+)',                           icon:'AG', type:'gateway', wrong:false, bpmn:'Parallel Gateway SPLIT (+): start alle parallelle paden tegelijk. AD, Workday \u00E9n SID werken gelijktijdig.'},
+          {id:'st_ad',     label:'Service Task\nActive Directory:\nAccount aanmaken',icon:'ST', type:'service', wrong:false, bpmn:'Service Task \u2014 Active Directory: het systeem maakt automatisch het Windows-account en e-mail aan.'},
+          {id:'ut_hr',     label:'User Task\nWorkday:\nHR-intake uitvoeren',         icon:'UT', type:'user',    wrong:false, bpmn:'User Task \u2014 Workday: HR voert de intake uit en legt het dienstverband vast.'},
+          {id:'st_sid',    label:'Service Task\nSID:\nRollen toewijzen',             icon:'ST', type:'service', wrong:false, bpmn:'Service Task \u2014 SID: het identity-systeem kent automatisch de juiste rollen en autorisaties toe.'},
+          {id:'gw_join',   label:'Parallel GW\nJoin (+)',                            icon:'AG', type:'gateway', wrong:false, bpmn:'Parallel Gateway JOIN (+): wacht tot ALLE parallelle paden zijn afgerond voordat het proces verder gaat.'},
+          {id:'st_welkom', label:'Service Task\nOutlook:\nWelkomstmail sturen',      icon:'ST', type:'service', wrong:false, bpmn:'Service Task \u2014 Outlook: stuurt automatisch een welkomstmail nadat AD, Workday \u00E9n SID klaar zijn.'},
+          {id:'wrong_xor', label:'XOR Gateway\nOf/Of',                              icon:'XG', type:'wrong',   wrong:true,  bpmn:'Fout: XOR kiest maar \u00E9\u00E9n pad. Bij onboarding moeten AD, Workday \u00E9n SID allemaal uitgevoerd worden.'},
+          {id:'wrong_sap', label:'Service Task\nSAP:\nKostenplaats aanmaken',        icon:'ST', type:'wrong',   wrong:true,  bpmn:'Fout: SAP kostenplaats aanmaken is onderdeel van financieel onboarden \u2014 een apart deelproces.'},
+          {id:'wrong_out', label:'User Task\nOutlook:\nManager informeren',          icon:'UT', type:'wrong',   wrong:true,  bpmn:'Fout: de manager informeren is geen aparte stap hier. De welkomstmail dekt communicatie af.'}
+        ],
+        correct:[
+          ['gw_split','st_ad','ut_hr','st_sid','gw_join','st_welkom'],
+          ['gw_split','ut_hr','st_ad','st_sid','gw_join','st_welkom'],
+          ['gw_split','st_ad','st_sid','ut_hr','gw_join','st_welkom'],
+          ['gw_split','st_sid','st_ad','ut_hr','gw_join','st_welkom'],
+          ['gw_split','ut_hr','st_sid','st_ad','gw_join','st_welkom'],
+          ['gw_split','st_sid','ut_hr','st_ad','gw_join','st_welkom']
+        ],
+        hints:['\uD83D\uDCA1 Tip 1: Begin met Parallel Gateway SPLIT (+) \u2014 dan lopen AD, Workday en SID tegelijk. Sluit af met Parallel Gateway JOIN (+). Welkomstmail via Outlook is de laatste stap.'],
+        expl:'Correct: Parallel Gateway split \u2192 [AD account + Workday HR-intake + SID rollen] tegelijk \u2192 Parallel Gateway join \u2192 Outlook welkomstmail.'
+      },
+      {
+        title:'Verzwaringsaanvraag \u2014 Alliander aansluiting',
+        desc:'Een klant dient een verzwaringsaanvraag in. De RPA Bot (BluePrism) verwerkt de offerte als \u00E9\u00E9n stap in het grotere Camunda-orchestratieproces.',
+        maxPts:350, twoRow:true, strictOrder:true,
+        startLabel:'Aanvraag\nOntvangen', startColor:'#4a2aaa',
+        endLabel:'Aansluiting\nVerzwaard', endColor:'#4a2aaa',
+        pieces:[
+          {id:'st_cis',     label:'Service Task\nCIS:\nAanvraag registreren',       icon:'ST', type:'service', wrong:false, bpmn:'Service Task \u2014 CIS (Customer Information System): registreert automatisch de verzwaringsaanvraag en klantgegevens.'},
+          {id:'ut_tech',    label:'User Task\nNIR:\nTechnische beoordeling',         icon:'UT', type:'user',    wrong:false, bpmn:'User Task \u2014 NIR (Netwerk Informatie Register): een netwerkengineer beoordeelt de technische haalbaarheid.'},
+          {id:'gw_xor',     label:'XOR Gateway\nHaalbaar?',                         icon:'XG', type:'gateway', wrong:false, bpmn:'Exclusive Gateway (XOR): haalbaar? Ja \u2192 offerte. Nee \u2192 afwijzing. Precies \u00E9\u00E9n pad.'},
+          {id:'rpa_factuur',label:'Service Task\nRPA Bot:\nOfferte + Factuur',       icon:'ST', type:'service', wrong:false, bpmn:'Service Task \u2014 RPA Bot (BluePrism): de robot verwerkt automatisch de offerte \u00E9n factuur. Dit is het RPA-deelproces als \u00E9\u00E9n stap in Camunda.'},
+          {id:'st_gis',     label:'Service Task\nGIS:\nNetwerk bijwerken',           icon:'ST', type:'service', wrong:false, bpmn:'Service Task \u2014 GIS (Geographic Information System): bijwerken van netwerktopologie met de nieuwe aansluitgegevens.'},
+          {id:'ut_veldwerk',label:'User Task\nFieldForce:\nVeldwerk plannen',        icon:'UT', type:'user',    wrong:false, bpmn:'User Task \u2014 FieldForce: een planningsmedewerker plant het veldwerk in voor de fysieke verzwaring.'},
+          {id:'wrong_par',  label:'Parallel GW\nSplit (+)',                          icon:'AG', type:'wrong',   wrong:true,  bpmn:'Fout: bij haalbaar/niet-haalbaar gebruik je XOR. Parallel Gateway laat alles tegelijk lopen.'},
+          {id:'wrong_sap',  label:'Service Task\nSAP:\nBoeking aanmaken',            icon:'ST', type:'wrong',   wrong:true,  bpmn:'Fout: SAP-boeking is een vervolgstap na veldwerk en hoort in een financieel deelproces.'},
+          {id:'wrong_manual',label:'User Task\nHandmatig\nFactuur maken',           icon:'UT', type:'wrong',   wrong:true,  bpmn:'Fout: handmatig facturen maken is precies wat RPA vervangt. De RPA Bot doet dit automatisch.'}
+        ],
+        correct:[
+          ['st_cis','ut_tech','gw_xor','rpa_factuur','st_gis','ut_veldwerk'],
+          ['st_cis','ut_tech','gw_xor','st_gis','rpa_factuur','ut_veldwerk']
+        ],
+        hints:['\uD83D\uDCA1 Tip 1: Begin in CIS (klantregistratie), dan technische beoordeling in NIR. Na de XOR-gateway (haalbaar?) volgt de RPA Bot die de offerte en factuur verwerkt.'],
+        expl:'Correct: CIS registreren \u2192 NIR technische beoordeling \u2192 XOR Gateway (haalbaar?) \u2192 RPA Bot offerte+factuur \u2192 GIS netwerk bijwerken \u2192 FieldForce veldwerk plannen.'
+      }
+    ];
+  }
+
+  get themeColor() { return ['#4a2aaa','#6e4aff','#3a1a8a'][this.levelIdx]||'#4a2aaa'; }
+  get themeDark()  { return '#2d1570'; }
+  get themeLight() { return '#f0f0ff'; }
+  get themeBorder(){ return '#c0b8f0'; }
+  get levelIcon()  { return ['\uD83D\uDCCC','\uD83D\uDD04','\u26A1'][this.levelIdx]||'\u2699'; }
+  get levelLabel() { return 'Level '+(this.levelIdx+1)+' \u2014 '+['Verlofaanvraag','Onboarding medewerker','Verzwaringsaanvraag'][this.levelIdx]; }
+}
+
+/* ══════════════════════════════════════════════════════
+   CLASS: UI — beheert alle schermen, knoppen en visuele updates
+══════════════════════════════════════════════════════ */
+class UI {
+  constructor(storage, confetti) {
+    this._storage = storage;
+    this._confetti = confetti;
+    this._activeGame = null;
+    this._rpaRenderer = null;
+    this._bpmnRenderer = null;
+    this._attractTimeout = null;
+    this._dragging = null;
+    this._SCREENS = ['screen-attract','screen-modus','screen-intro','screen-menu','screen-start','screen-game','screen-gameover','screen-result','screen-lb'];
+    this._$ = id => document.getElementById(id);
+    this._bindStatic();
+  }
+
+  setRenderers(rpa, bpmn) { this._rpaRenderer=rpa; this._bpmnRenderer=bpmn; }
+
+  _bindStatic() {
+    this._$('lb-hdr-btn').onclick = () => this.openLB();
+    this._$('attr-cta-btn').onclick = () => this.show('screen-modus');
+    this._$('modus-rpa').onclick = () => App.startMode('rpa');
+    this._$('modus-cam').onclick = () => App.startMode('camunda');
+    this._$('modus-back-btn').onclick = () => this.goAttract();
+    this._$('intro-to-menu-btn').onclick = () => this.show('screen-menu');
+    this._$('menu-lb-btn').onclick = () => this.openLB();
+    this._$('start-back-btn').onclick = () => this.show('screen-menu');
+    this._$('start-play-btn').onclick = () => { if (this._activeGame) this._activeGame.beginLevel(); };
+    this._$('game-back-btn').onclick = () => this.goAttract();
+    this._$('check-btn').onclick = () => { if (this._activeGame) this._activeGame.check(); };
+    this._$('hint-btn').onclick = () => { if (this._activeGame) this._activeGame.useHint(); };
+    this._$('reset-btn').onclick = () => { if (this._activeGame) this._activeGame.resetLevel(); };
+    this._$('gameover-menu-btn').onclick = () => this.goAttract();
+    this._$('save-btn').onclick = () => this._doSave();
+    this._$('result-menu-btn').onclick = () => this.goAttract();
+    this._$('lb-close-btn').onclick = () => this.closeLB();
+    this._$('lb-back-btn').onclick = () => this.closeLB();
+    this._$('lb-clear-btn').onclick = () => this._clearLB();
+    // JSON knoppen vervangen door automatische GitHub sync
+    document.addEventListener('click', () => this._resetAttractTimer());
+    window.addEventListener('resize', () => this._onResize());
+  }
+
+  setActiveGame(game) {
+    this._activeGame = game;
+    this._setupPiecesDrag();
+  }
+
+  show(id) {
+    this._SCREENS.forEach(s => {
+      const el = this._$(s);
+      if (!el) return;
+      el.style.display = (s===id) ? (s==='screen-attract'?'flex':'block') : 'none';
+    });
+    if (id==='screen-attract') this._renderAttrLB();
+  }
+
+  goAttract() {
+    if (this._rpaRenderer) this._rpaRenderer.stopAnim();
+    App.stopTimers();
+    this.show('screen-attract');
+    this._resetAttractTimer();
+  }
+
+  /* ── Menu opbouwen ── */
+  buildMenu(game) {
+    const isRPA = game.mode === 'rpa';
+    this._$('menu-title').textContent = isRPA ? 'Kies een level \u2014 RPA' : 'Kies een level \u2014 Camunda';
+    this._$('menu-title').style.color = isRPA ? '#2d5a12' : '#4a2aaa';
+    const cards = this._$('lvl-cards');
+    cards.innerHTML = '';
+    game.levels.forEach((lv,i) => {
+      const maxBonus = [100,200,350][i]||100;
+      const div = document.createElement('div');
+      div.className = 'lvl-card';
+      div.style.borderColor = isRPA ? ['#c5d9a0','#f5d5aa','#b5c8f0'][i] : '#c0b8f0';
+      div.style.background = isRPA ? ['#f9fcf5','#fffaf5','#f5f8ff'][i] : '#f8f6ff';
+      div.innerHTML = `
+        <div class="lvl-num" style="background:${isRPA?['#f4f8ee','#fff3e6','#eef3ff'][i]:'#f0f0ff'};font-size:38px">${game.levels[i] ? (isRPA?['\uD83D\uDCC4','\uD83D\uDCE6','\uD83D\uDD10'][i]:['📌','🔄','⚡'][i]) : '?'}</div>
+        <div style="flex:1">
+          <div class="lvl-name">Level ${i+1} \u2014 ${lv.title.split(' \u2014 ')[0]||lv.title}</div>
+          <div class="lvl-meta">${lv.correct[0].length} stukjes &middot; ${[3,2,1][i]||1} hint${[3,2,1][i]===1?'':'s'} beschikbaar</div>
+        </div>
+        <div class="lvl-pts" style="color:${isRPA?['#4a8520','#e07718','#1a3a72'][i]:'#4a2aaa'}">${lv.maxPts} pts</div>`;
+      div.onclick = () => { game.selectLevel(i); };
+      cards.appendChild(div);
+    });
+  }
+
+  /* ── Start scherm ── */
+  showStartScreen(game) {
+    const lv = game.currentLevel;
+    const maxBonus = [100,200,350][game.levelIdx]||100;
+    this._$('start-icon').innerHTML = game.levelIcon;
+    this._$('start-name').textContent = game.levelLabel;
+    this._$('start-name').style.color = game.themeColor;
+    this._$('start-desc').textContent = lv.desc;
+    this._$('start-meta').textContent = lv.correct[0].length+' elementen \u00B7 '+([3,2,1][game.levelIdx]||1)+' hint beschikbaar';
+    this._$('start-pts-box').style.background = game.themeLight;
+    this._$('start-pts-box').style.border = '1.5px solid '+game.themeBorder;
+    this._$('start-pts-title').style.color = game.themeColor;
+    this._$('start-maxpts').textContent = lv.maxPts+' pts';
+    this._$('start-maxpts').style.color = game.themeColor;
+    this._$('start-timebonus').textContent = '+'+maxBonus+' pts';
+    this._$('start-total').textContent = (lv.maxPts+maxBonus+50)+' pts';
+    this._$('start-total').style.color = game.themeColor;
+    this._$('start-total-row').style.borderColor = game.themeBorder;
+    this._$('start-play-btn').style.background = game.themeColor;
+    this.show('screen-start');
+  }
+
+  /* ── Game scherm opzetten ── */
+  setupGameScreen(game) {
+    const lv = game.currentLevel;
+    const isBPMN = game.mode === 'camunda';
+    const canvasH = lv.twoRow ? (isBPMN?380:400) : (isBPMN?260:280);
+
+    this._$('sc-title').textContent = lv.title;
+    this._$('sc-title').style.color = game.themeDark;
+    this._$('sc-desc').textContent = lv.desc;
+    this._$('sc-icon').textContent = game.levelIcon;
+    this._$('scenario-box').style.background = game.themeLight;
+    this._$('scenario-box').style.borderColor = game.themeBorder;
+    this._$('pts-den').textContent = '/'+lv.maxPts;
+    this._$('pts-remain').textContent = 'Max: '+lv.maxPts+' pts';
+    this._$('lvl-badge').textContent = game.levelLabel;
+    this._$('lvl-badge').style.background = game.themeColor;
+    this._$('check-btn').style.background = game.themeColor;
+    this._$('check-btn').disabled = true;
+    this._$('kist-lbl').style.color = game.themeDark;
+    this._$('feedback').className = 'feedback';
+    this._$('bpmn-tip-bar').style.display = isBPMN ? 'block' : 'none';
+
+    const cv = this._$('canvas');
+    cv.height = canvasH;
+    const flashEl = this._$('flash-overlay');
+
+    if (isBPMN) {
+      this._bpmnRenderer._cv = cv;
+      this._bpmnRenderer._flash = flashEl;
+      this._bpmnRenderer.setHeight(canvasH);
+      this._bpmnRenderer.resize();
+      this._bpmnRenderer.computePos(lv, game.placed);
+      this._bpmnRenderer.addClickHandler(lv, game.placed, idx => game.removePiece(idx));
+    } else {
+      this._rpaRenderer._cv = cv;
+      this._rpaRenderer._flash = flashEl;
+      this._rpaRenderer.setHeight(canvasH);
+      this._rpaRenderer.resize();
+      this._rpaRenderer.computePos(lv, game.placed);
+      const sp = this._rpaRenderer.nodePos['start'];
+      this._rpaRenderer.robotPos = {x:sp?sp.x:62, y:sp?sp.y:162};
+      this._rpaRenderer.addClickHandler(lv, game.placed, idx => game.removePiece(idx));
+      this._rpaRenderer.addDragHandler(() => { if (this._dragging) game.addPiece(this._dragging); this._dragging=null; });
+    }
+
+    this.updatePtsBar(game);
+    this.updatePips(game);
+    this._renderPieces(game);
+    this._drawCanvas(game);
+    this.show('screen-game');
+  }
+
+  onPieceAdded(game, piece) {
+    const isBPMN = game.mode==='camunda';
+    const r = isBPMN ? this._bpmnRenderer : this._rpaRenderer;
+    r.computePos(game.currentLevel, game.placed);
+    if (!isBPMN) {
+      const pos = r.nodePos[piece.id];
+      if (pos) r.animateRobot(pos.x, pos.y, null, () => this._drawCanvas(game));
+    } else {
+      this._drawCanvas(game);
+    }
+    this._renderPieces(game);
+    this.updateCheck(game);
+  }
+
+  onPieceRemoved(game) {
+    const isBPMN = game.mode==='camunda';
+    const r = isBPMN ? this._bpmnRenderer : this._rpaRenderer;
+    r.computePos(game.currentLevel, game.placed);
+    if (!isBPMN) {
+      if (game.placed.length > 0) {
+        const prev = r.nodePos[game.placed[game.placed.length-1].id];
+        if (prev) r.animateRobot(prev.x, prev.y, null, () => this._drawCanvas(game));
+      } else {
+        this._drawCanvas(game);
+      }
+    } else {
+      this._drawCanvas(game);
+    }
+    this._renderPieces(game);
+    this.updateCheck(game);
+  }
+
+  onCorrect(game) {
+    if (game.mode === 'rpa') {
+      const r = this._rpaRenderer;
+      r.computePos(game.currentLevel, game.placed);
+      const chain = ['start',...game.placed.map(p=>p.id),'end'];
+      let i=0;
+      const step = () => {
+        if (i>=chain.length) { this.showResultScreen(game); return; }
+        const pos = r.nodePos[chain[i]]; i++;
+        if (pos) r.animateRobot(pos.x, pos.y, ()=>setTimeout(step,180), ()=>this._drawCanvas(game));
+        else step();
+      };
+      step();
+    } else {
+      this.showResultScreen(game);
+    }
+  }
+
+  flashCanvas() {
+    const r = this._activeGame && this._activeGame.mode==='camunda' ? this._bpmnRenderer : this._rpaRenderer;
+    r.flash('#c0281a');
+  }
+
+  _drawCanvas(game) {
+    const lv = game.currentLevel;
+    if (game.mode==='camunda') {
+      this._bpmnRenderer.computePos(lv, game.placed);
+      this._bpmnRenderer.drawAll(lv, game.placed);
+    } else {
+      this._rpaRenderer.computePos(lv, game.placed);
+      this._rpaRenderer.drawAll(lv, game.placed, game.themeColor, game.themeDark);
+    }
+  }
+
+  /* ── Puzzelstukjes ── */
+  _renderPieces(game) {
+    const el = this._$('pieces');
+    el.innerHTML = '';
+    const isBPMN = game.mode==='camunda';
+    const shuffled = [...game.currentLevel.pieces].sort(() => Math.random()-.5);
+    shuffled.forEach(p => {
+      const isPlaced = game.placed.find(x=>x.id===p.id);
+      if (isPlaced) return;
+      const d = document.createElement('div');
+      d.id = 'pc-'+p.id;
+
+      if (isBPMN) {
+        const colMap = {service:'#1e5fa8',user:'#0a6e47',gateway:'#8a4400',wrong:'#a02018'};
+        const col = colMap[p.type]||'#4a2aaa';
+        const typeLabel = {service:'Service Task',user:'User Task',gateway:'Gateway',wrong:'Verkeerd'}[p.type]||'';
+        d.style.cssText = `background:#fff;border:2px solid ${col};border-radius:10px;padding:7px 14px;font-size:14px;font-weight:700;color:${col};cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:background .15s`;
+        d.innerHTML = `<span style="font-size:10px;font-weight:700;background:${col};color:#fff;border-radius:5px;padding:2px 6px;flex-shrink:0">${typeLabel}</span><span>${p.label.replace(/\n/g,' ')}</span>`;
+        d.addEventListener('mouseenter', () => {
+          const tip = this._$('bpmn-tip-bar');
+          if (tip&&p.bpmn) { tip.textContent=p.bpmn; tip.style.color=col; }
+        });
+        d.addEventListener('mouseleave', () => {
+          const tip = this._$('bpmn-tip-bar');
+          if (tip) { tip.textContent='Hover over een element voor BPMN-uitleg'; tip.style.color='#667'; }
+        });
+      } else {
+        d.className = 'piece';
+        d.innerHTML = (p.icon||'') + ' ' + p.label.replace(/\n/g,' ');
+        d.setAttribute('draggable','true');
+        d.addEventListener('dragstart', e => { this._dragging=p; d.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
+        d.addEventListener('dragend', () => { this._dragging=null; d.classList.remove('dragging'); });
+      }
+      d.addEventListener('click', () => game.addPiece(p));
+      el.appendChild(d);
+    });
+  }
+
+  _setupPiecesDrag() {
+    const el = this._$('pieces');
+    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('over'));
+    el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('over'); });
+  }
+
+  updateCheck(game) {
+    this._$('check-btn').disabled = game.placed.length < game.currentLevel.correct[0].length;
+  }
+
+  updatePtsBar(game) {
+    const pts=game.currentPts, pct=pts/game.maxPts*100;
+    const col=pct>60?game.themeColor:pct>30?'#e07718':'#c0281a';
+    this._$('pts-fill').style.width=pct+'%'; this._$('pts-fill').style.background=col;
+    this._$('pts-num').textContent=pts; this._$('pts-num').style.color=col;
+  }
+
+  updatePips(game) {
+    const max=[3,2,1][game.levelIdx]||1, el=this._$('pips');
+    el.innerHTML='';
+    for(let i=0;i<max;i++){const s=document.createElement('span');s.className='pip'+(i<game.hintsUsed?' used':'');el.appendChild(s);}
+    this._$('hint-btn').disabled=game.hintsUsed>=max;
+  }
+
+  showFeedback(msg,type,dur=4500) {
+    const el=this._$('feedback');
+    el.innerHTML=msg; el.className='feedback show '+type;
+    clearTimeout(el._t); el._t=setTimeout(()=>el.className='feedback',dur);
+  }
+
+  showGameOver(game) {
+    App.stopTimers();
+    const btn=this._$('gameover-lower-btn'), msg=this._$('gameover-msg');
+    if(game.levelIdx===0){
+      msg.innerHTML='Je score is op nul gekomen. Probeer het opnieuw \u2014 je kunt het!';
+      btn.innerHTML='&#8634; Probeer Level 1 opnieuw'; btn.onclick=()=>game.selectLevel(0);
+    } else {
+      const names=game.levels[game.levelIdx-1];
+      msg.innerHTML='Dit level is te uitdagend. Probeer eerst <strong>Level '+game.levelIdx+' \u2014 '+(names?names.title.split(' \u2014 ')[0]:'')+'</strong>!';
+      btn.innerHTML='\u2B07 Ga naar Level '+game.levelIdx; btn.onclick=()=>game.selectLevel(game.levelIdx-1);
+    }
+    this.show('screen-gameover');
+  }
+
+  showResultScreen(game) {
+    this.show('screen-result');
+    const pct = game.earnedPts/game.maxPts;
+    let icon,title;
+    if(pct>=1&&game.lastPerfect>0){icon='&#127942;';title=game.mode==='camunda'?'Perfect BPMN-diagram!':'Perfect! In \u00E9\u00E9n keer goed!';}
+    else if(pct>=.6){icon='&#127919;';title='Goed gedaan!';}
+    else if(game.earnedPts>0){icon='&#128161;';title='Gelukt \u2014 met een paar omwegen!';}
+    else{icon='&#128517;';title='Doel bereikt! Volgende keer beter.';}
+    this._$('res-icon').innerHTML=icon;
+    this._$('res-title').textContent=title;
+    this._$('res-msg').innerHTML=game.currentLevel.expl;
+    this._$('res-score-num').textContent=game.earnedPts+' punten';
+    this._$('res-score-num').style.color=game.themeColor;
+    this._$('res-score-lbl').textContent=game.levelLabel;
+    const box=this._$('res-score-box');
+    box.style.background=pct>=.6?game.themeLight:'#fde0dd';
+    box.style.borderColor=pct>=.6?game.themeBorder:'#c0281a';
+    const split=this._$('res-score-split');
+    const tc=game.themeColor,tb=game.themeBorder;
+    const pc=game.lastPerfect>0?'#4a8520':'#ddd',pt=game.lastPerfect>0?'#2d5a12':'#bbb';
+    split.innerHTML=
+      `<div style="flex:1;background:#fff;border-radius:10px;padding:10px 8px;border:1.5px solid ${tb}"><div style="font-size:13px;color:#889;margin-bottom:4px">Niveaupunten</div><div style="font-size:22px;font-weight:700;color:${tc}">${game.lastBase}</div></div>`+
+      `<div style="flex:1;background:#fff;border-radius:10px;padding:10px 8px;border:1.5px solid ${game.lastTime>0?'#e07718':'#ddd'}"><div style="font-size:13px;color:#889;margin-bottom:4px">&#9889; Tijdsbonus</div><div style="font-size:22px;font-weight:700;color:${game.lastTime>0?'#e07718':'#bbb'}">+${game.lastTime||0}</div></div>`+
+      `<div style="flex:1;background:${game.lastPerfect>0?game.themeLight:'#fff'};border-radius:10px;padding:10px 8px;border:1.5px solid ${pc}"><div style="font-size:13px;color:#889;margin-bottom:4px">&#11088; Perfect bonus</div><div style="font-size:22px;font-weight:700;color:${pt}">+${game.lastPerfect||0}</div></div>`;
+    split.style.display='flex';
+    const inp=this._$('name-inp');
+    inp.value=''; inp.disabled=false; inp.style.borderColor='';
+    this._$('save-btn').disabled=false;
+    this._$('save-btn').style.background=game.themeColor;
+    this._$('saved-msg').style.display='none';
+    if(pct>=1&&game.lastPerfect>0) setTimeout(()=>this._confetti.launch(),350);
+    setTimeout(()=>inp.focus(),300);
+  }
+
+  async _doSave() {
+    const name=this._$('name-inp').value.trim();
+    if(!name){const i=this._$('name-inp');i.classList.add('err');i.focus();setTimeout(()=>i.classList.remove('err'),2000);return;}
+    const res = await this._activeGame.saveScore(name);
+    if(!res.ok){const i=this._$('name-inp');i.classList.add('err');i.focus();this.showFeedback(res.msg,'err',5000);setTimeout(()=>i.classList.remove('err'),2500);return;}
+    this._$('name-inp').disabled=true;
+    this._$('save-btn').disabled=true;
+    this._$('saved-msg').style.display='flex';
+    this.openLB();
+    // Toon GitHub sync status
+    if(res.github) {
+      setTimeout(()=>this._showGitHubStatus(res.github.ok, res.github.ok ? '✓ Opgeslagen naar GitHub!' : '⚠ Lokaal opgeslagen (GitHub: '+res.github.msg+')'), 500);
+    }
+  }
+
+  /* ── Leaderboard ── */
+  openLB() { this._renderLB(); this._$('screen-lb').style.display='block'; }
+  closeLB() { this._$('screen-lb').style.display='none'; this._resetAttractTimer(); }
+
+  _renderLB() {
+    const scores=this._storage.scores, list=this._$('lb-list'), empty=this._$('lb-empty');
+    list.innerHTML='';
+    if(!scores.length){empty.style.display='block';return;}
+    empty.style.display='none';
+    const medals=['&#129351;','&#129352;','&#129353;'],rc=['gold','silver','bronze'];
+    const rpaColors=['#4a8520','#e07718','#1a3a72'];
+    scores.slice(0,20).forEach((s,i)=>{
+      const isCam=s.mode==='camunda';
+      const col=isCam?'#4a2aaa':(rpaColors[(s.level||1)-1]||'#4a8520');
+      const row=document.createElement('div');
+      row.className='lb-row'+(i<3?' '+rc[i]:'');
+      row.innerHTML=`<div class="lb-rank">${i<3?medals[i]:'#'+(i+1)}</div>`+
+        `<div class="lb-name">${this._esc(s.name)}<span class="lb-lvl-badge" style="background:${col}">${isCam?'CAM':'RPA'} L${s.level||'?'}</span></div>`+
+        `<div class="lb-score" style="color:${col}">${s.score} pts</div>`+
+        `<div class="lb-date">${s.date||''}</div>`;
+      list.appendChild(row);
+    });
+  }
+
+  _renderAttrLB() {
+    const scores=this._storage.scores.slice(0,3);
+    const wrap=this._$('attr-lb-wrap'), list=this._$('attr-lb-list');
+    if(!scores.length){wrap.style.display='none';return;}
+    wrap.style.display='block'; list.innerHTML='';
+    const medals=['&#129351;','&#129352;','&#129353;'];
+    scores.forEach((s,i)=>{
+      const row=document.createElement('div'); row.className='attr-lb-row';
+      row.innerHTML=`<span class="attr-lb-rank">${medals[i]}</span><span class="attr-lb-name">${this._esc(s.name)}</span><span class="attr-lb-score">${s.score} pts</span>`;
+      list.appendChild(row);
+    });
+  }
+
+  _clearLB() {
+    if(confirm('Weet je zeker dat je het leaderboard wilt wissen?')){this._storage.clear();this._renderLB();}
+  }
+
+  _showGitHubStatus(ok, msg) {
+    const el=this._$('lb-json-status');
+    if(!el)return;
+    el.textContent=msg; el.className='lb-json-status '+(ok?'ok':'err');
+    setTimeout(()=>el.className='lb-json-status',5000);
+  }
+
+  _showJSONStatus(ok,msg) { this._showGitHubStatus(ok,msg); }
+
+  _resetAttractTimer() {
+    clearTimeout(this._attractTimeout);
+    this._attractTimeout=setTimeout(()=>{
+      const g=this._$('screen-game'), r=this._$('screen-result');
+      if(g.style.display==='none'&&r.style.display==='none') this.goAttract();
+    },45000);
+  }
+
+  _onResize() {
+    const g=this._$('screen-game');
+    if(g&&g.style.display!=='none'&&this._activeGame){
+      if(this._activeGame.mode==='camunda'){this._bpmnRenderer.resize();this._bpmnRenderer.computePos(this._activeGame.currentLevel,this._activeGame.placed);this._bpmnRenderer.drawAll(this._activeGame.currentLevel,this._activeGame.placed);}
+      else{this._rpaRenderer.resize();this._rpaRenderer.computePos(this._activeGame.currentLevel,this._activeGame.placed);this._rpaRenderer.drawAll(this._activeGame.currentLevel,this._activeGame.placed,this._activeGame.themeColor,this._activeGame.themeDark);}
+    }
+  }
+
+  _esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+}
+
+/* ══════════════════════════════════════════════════════
+   CLASS: App — bootstrap en modus routing
+══════════════════════════════════════════════════════ */
+class App {
+  static init() {
+    const storage = new Storage('tpa_v5');
+    const timerEl = { fill:document.getElementById('timer-fill'), lbl:document.getElementById('timer-bonus-lbl'), wrap:document.getElementById('timer-bar-wrap') };
+    const timer = new Timer(timerEl.fill, timerEl.lbl, timerEl.wrap);
+    const confetti = new Confetti(document.getElementById('confetti-canvas'), document.getElementById('app'));
+    const ui = new UI(storage, confetti);
+    const rpaRenderer = new RPARenderer(document.getElementById('canvas'), document.getElementById('flash-overlay'));
+    const bpmnRenderer = new BPMNRenderer(document.getElementById('canvas'), document.getElementById('flash-overlay'));
+    ui.setRenderers(rpaRenderer, bpmnRenderer);
+    App._storage = storage;
+    App._timer = timer;
+    App._ui = ui;
+    App._rpaGame = new RPAGame(storage, timer, ui);
+    App._camGame = new CamundaGame(storage, timer, ui);
+    // Laad leaderboard van GitHub bij opstarten
+    App._storage.loadFromGitHub().then(() => {
+      ui.goAttract();
+    }).catch(() => {
+      ui.goAttract();
+    });
+  }
+
+  static startMode(mode) {
+    const game = mode==='camunda' ? App._camGame : App._rpaGame;
+    game.levelIdx = 0;
+    App._ui.setActiveGame(game);
+    App._ui.buildMenu(game);
+    App._ui.show('screen-intro');
+  }
+
+  static stopTimers() {
+    if (App._timer) App._timer.stop();
+  }
+}
+
+/* ── BOOT ── */
+if (document.readyState==='loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    try { App.init(); } catch(e) { document.body.innerHTML='<div style="padding:40px;font-family:Arial;font-size:20px;color:#c0281a"><strong>Fout bij laden:</strong> '+e.message+'<br><br>Probeer Chrome of Edge.</div>'; }
+  });
+} else {
+  try { App.init(); } catch(e) { document.body.innerHTML='<div style="padding:40px;font-family:Arial;font-size:20px;color:#c0281a"><strong>Fout bij laden:</strong> '+e.message+'<br><br>Probeer Chrome of Edge.</div>'; }
+}
+
+</script>
+</body>
+</html>
